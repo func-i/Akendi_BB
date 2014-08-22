@@ -5,24 +5,28 @@ $sentence = $('#sentence')
 currentText = ""
 
 $('input').on "input", (ev) ->
-  currentSentence.start() unless currentSentence.isInProgress
-  currentText = $(this).val()
-  currentLength = currentText.length
-  currentIndex = currentLength - 1
-  if currentText[currentIndex] is currentSentence.targetText[currentIndex]
-    $sentence.find(".char#{currentLength}").css
-      color: 'white'
-      backgroundColor: 'lightgreen'
-  else
-    $sentence.find(".char#{currentLength}").css
-      color: 'white'
-      backgroundColor: 'red'
+  currentSentence.start() unless currentSentence.isInProgress or currentSentence.isFinished
+  
+  if currentSentence.isInProgress
+    
+    currentText = $(this).val()
+    currentIndex = currentText.length - 1
+    
+    if currentText[currentIndex] is currentSentence.targetText[currentIndex]
+      $sentence.find(".char#{currentText.length}").css
+        color: 'white'
+        backgroundColor: 'lightgreen'
+    else
+      $sentence.find(".char#{currentText.length}").css
+        color: 'white'
+        backgroundColor: 'red'
+
+    currentSentence.stop() if currentText.length >= currentSentence.targetText.length
 
 class Sentence
   constructor: (args) ->
     @parseObj = args.parseObj
     @isCurrent = args.isCurrent
-    @isInProgress = false
     @targetText = @parseObj.get('text')
     @currentText = ""
     @targetLetters = @targetText.split('')
@@ -38,6 +42,10 @@ class Sentence
 
   start: ->
     @isInProgress = true
+
+  stop: ->
+    @isInProgress = false
+    @isFinished = true
 
 class Runner
   constructor: (args) ->
