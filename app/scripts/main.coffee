@@ -7,11 +7,16 @@ currentText = ""
 $('input').on "input", (ev) ->
   currentSentence.start() unless currentSentence.isInProgress
   currentText = $(this).val()
-  currentIndex = currentText.length - 1
+  currentLength = currentText.length
+  currentIndex = currentLength - 1
   if currentText[currentIndex] is currentSentence.targetText[currentIndex]
-    console.log 'good'
+    $sentence.find(".char#{currentLength}").css
+      color: 'white'
+      backgroundColor: 'lightgreen'
   else
-    console.log 'bad'
+    $sentence.find(".char#{currentLength}").css
+      color: 'white'
+      backgroundColor: 'red'
 
 class Sentence
   constructor: (args) ->
@@ -29,6 +34,7 @@ class Sentence
 
   loadText: ->
     $sentence.text @targetText
+    $sentence.lettering()
 
   start: ->
     @isInProgress = true
