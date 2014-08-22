@@ -24,3 +24,8 @@ class Sentence
   constructor: (args) ->
     @parseObj = args.parseObj
     @isCurrent = args.isCurrent
+    @text = @parseObj.get('text')
+    @loadText() if @isCurrent
+
+  loadText: ->
+    $sentence.text @text
