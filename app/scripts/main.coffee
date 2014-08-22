@@ -1,4 +1,4 @@
-sentenceObjs = []
+sentences = []
 
 Parse.initialize("wn0yAEDFtIJ9Iw3jrL8hBJBeFbjQkVaJvnmY1CS3", "KBmFKqYHviQnxPQhQe9U7VOWg5E5LjFFKoqzC7ay");
 
@@ -8,12 +8,12 @@ sentenceQuery = new Parse.Query(ParseSentence)
 $sentence = $('#sentence')
 
 sentenceQuery.find
-  success: (sentences) ->
-    for sentence, i in sentences
-      sentenceObj = new Sentence
-        parseObj: sentence
+  success: (results) ->
+    for result, i in results
+      sentence = new Sentence
+        parseObj: result
         isCurrent: i is 0
-      sentenceObjs.push sentenceObj
+      sentences.push sentence
   error: (error) ->
     console.log error
 
