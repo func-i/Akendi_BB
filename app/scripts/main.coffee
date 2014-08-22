@@ -1,23 +1,8 @@
 sentences = []
 currentSentence = null
 
-Parse.initialize("wn0yAEDFtIJ9Iw3jrL8hBJBeFbjQkVaJvnmY1CS3", "KBmFKqYHviQnxPQhQe9U7VOWg5E5LjFFKoqzC7ay");
-
-ParseSentence = Parse.Object.extend("Sentence")
-sentenceQuery = new Parse.Query(ParseSentence)
-
 $sentence = $('#sentence')
 currentText = ""
-
-sentenceQuery.find
-  success: (results) ->
-    for result, i in results
-      sentence = new Sentence
-        parseObj: result
-        isCurrent: i is 0
-      sentences.push sentence
-  error: (error) ->
-    console.log error
 
 $('input').on "input", (ev) ->
   currentSentence.start() unless currentSentence.isInProgress
@@ -48,3 +33,22 @@ class Sentence
   start: ->
     @isInProgress = true
 
+class Runner
+  constructor: (args) ->
+    @initParse()
+    @getSentences()
+    
+  initParse: ->
+    Parse.initialize("wn0yAEDFtIJ9Iw3jrL8hBJBeFbjQkVaJvnmY1CS3", "KBmFKqYHviQnxPQhQe9U7VOWg5E5LjFFKoqzC7ay");
+    @ParseSentence = Parse.Object.extend("Sentence")
+    @sentenceQuery = new Parse.Query(@ParseSentence)
+
+  getSentences: ->
+    @sentenceQuery.find().then (results) ->
+      for result, i in results
+        sentence = new Sentence
+          parseObj: result
+          isCurrent: i is 0
+        sentences.push sentence
+
+runner = new Runner()
