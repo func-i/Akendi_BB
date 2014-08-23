@@ -2,9 +2,11 @@ sentences = []
 currentSentence = null
 
 $sentence = $('#sentence')
+$input    = $('input')
+$next     = $('#next')
 currentText = ""
 
-$('input').on "input", (ev) ->
+$input.on "input", (ev) ->
   currentSentence.start() unless currentSentence.isInProgress or currentSentence.isFinished
   
   if currentSentence.isInProgress
@@ -21,7 +23,14 @@ $('input').on "input", (ev) ->
         color: 'white'
         backgroundColor: 'red'
 
-    currentSentence.stop() if currentText.length >= currentSentence.targetText.length
+
+    if currentText.length >= currentSentence.targetText.length
+      currentSentence.stop()
+      runner.handleSentenceStop()
+
+$next.click (ev) ->
+  ev.preventDefault()
+  runner.showNextSentence()
 
 class Sentence
   constructor: (args) ->
@@ -64,5 +73,20 @@ class Runner
           parseObj: result
           isCurrent: i is 0
         sentences.push sentence
+
+  onLastSentence: ->
+    index = sentences.indexOf(currentSentence)
+    sentences.length is index + 1
+
+  handleSentenceStop: ->
+    if @onLastSentence()
+      # finish or whatever
+    else
+      $next.show()
+
+  showNextSentence: ->
+    index = sentences.indexOf(currentSentence)
+    sentences[index + 1].makeCurrent()
+    $next.hide()
 
 runner = new Runner()
