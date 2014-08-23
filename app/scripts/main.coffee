@@ -16,7 +16,7 @@ $input.on "input", (ev) ->
   currentSentence.start() unless currentSentence.isInProgress or currentSentence.isFinished
   
   if currentSentence.isInProgress
-    
+
     currentText = $(this).val()
     currentIndex = currentText.length - 1
 
@@ -94,7 +94,7 @@ class Runner
   constructor: (args) ->
     @initParse()
     @getSentences()
-    @initFastclick()
+    @initFastClick()
     
   initParse: ->
     Parse.initialize("wn0yAEDFtIJ9Iw3jrL8hBJBeFbjQkVaJvnmY1CS3", "KBmFKqYHviQnxPQhQe9U7VOWg5E5LjFFKoqzC7ay");
@@ -102,12 +102,12 @@ class Runner
     @ParseKeypress = Parse.Object.extend("Keypress")
     @sentenceQuery = new Parse.Query(@ParseSentence)
 
-  initFastclick: ->
+  initFastClick: ->
     FastClick.attach(document.body)
 
   getSentences: ->
     @sentenceQuery.find().then (results) ->
-      for result, i in results
+      for result in results
         sentence = new Sentence
           parseObj: result
         sentences.push sentence
