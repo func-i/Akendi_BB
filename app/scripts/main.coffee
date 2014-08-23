@@ -48,8 +48,6 @@ class Sentence
     @parseObj = args.parseObj
     @isCurrent = args.isCurrent
     @targetText = @parseObj.get('text')
-    @currentText = ""
-    @targetLetters = @targetText.split('')
     @keypresses = []
     @makeCurrent() if @isCurrent
 
