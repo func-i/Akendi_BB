@@ -60,7 +60,7 @@ class Keypress
       backgroundColor: backgroundColor
 
   createParseObj: ->
-    @parseObj = new runner.ParseKeypress()
+    @parseObj = new runner.parse.objects.Keypress()
     @parseObj.set 'sentence', @sentence.parseObj
     @parseObj.set 'targetChar', @targetChar
     @parseObj.set 'typedChar', @typedChar
@@ -97,16 +97,19 @@ class Runner
     @initFastClick()
     
   initParse: ->
-    Parse.initialize("wn0yAEDFtIJ9Iw3jrL8hBJBeFbjQkVaJvnmY1CS3", "KBmFKqYHviQnxPQhQe9U7VOWg5E5LjFFKoqzC7ay");
-    @ParseSentence = Parse.Object.extend("Sentence")
-    @ParseKeypress = Parse.Object.extend("Keypress")
-    @sentenceQuery = new Parse.Query(@ParseSentence)
+    Parse.initialize("wn0yAEDFtIJ9Iw3jrL8hBJBeFbjQkVaJvnmY1CS3", "KBmFKqYHviQnxPQhQe9U7VOWg5E5LjFFKoqzC7ay")
+    @parse =
+      objects:
+        Sentence: Parse.Object.extend("Sentence")
+        Test: Parse.Object.extend("Test")
+        Keypress: Parse.Object.extend("Keypress")
 
   initFastClick: ->
     FastClick.attach(document.body)
 
   getSentences: ->
-    @sentenceQuery.find().then (results) ->
+    query = new Parse.Query(@parse.objects.Sentence)
+    query.find().then (results) ->
       for result in results
         sentence = new Sentence
           parseObj: result
