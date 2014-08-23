@@ -1,10 +1,12 @@
 sentences = []
+keypresses = []
 currentSentence = null
 
 $start    = $('#start')
 $sentence = $('#sentence')
 $input    = $('input')
 $next     = $('#next')
+$submit   = $('#submit')
 currentText = ""
 
 $input.on "input", (ev) ->
@@ -19,10 +21,16 @@ $input.on "input", (ev) ->
       index: currentIndex
       typedChar: currentText[currentIndex]
       targetChar: currentSentence.targetText[currentIndex]
+      sentence: currentSentence
+    keypresses.push keypress
 
     if currentText.length >= currentSentence.targetText.length
       currentSentence.stop()
       runner.handleSentenceStop()
+
+$submit.click (ev) ->
+  ev.preventDefault()
+  runner.saveToParse()
 
 $start.click (ev) ->
   ev.preventDefault()
@@ -37,10 +45,10 @@ class Keypress
     @index = args.index
     @targetChar = args.targetChar
     @typedChar = args.typedChar
+    @sentence = args.sentence
     @correct = @typedChar is @targetChar
     @time = new Date().getTime()
     @assignCss()
-    currentSentence.keypresses.push this
 
   assignCss: ->
     backgroundColor = if @correct then 'lightgreen' else 'red'
@@ -48,12 +56,20 @@ class Keypress
       color: 'white'
       backgroundColor: backgroundColor
 
+  createParseObj: ->
+    @parseObj = new runner.ParseKeypress()
+    @parseObj.set 'sentence', @sentence.parseObj
+    @parseObj.set 'targetChar', @targetChar
+    @parseObj.set 'typedChar', @typedChar
+    @parseObj.set 'correct', @correct
+    @parseObj.set 'time', @time
+    @parseObj
+
 class Sentence
   constructor: (args) ->
     @parseObj = args.parseObj
     @isCurrent = false
     @targetText = @parseObj.get('text')
-    @keypresses = []
 
   makeCurrent: ->
     currentSentence = this
@@ -80,6 +96,7 @@ class Runner
   initParse: ->
     Parse.initialize("wn0yAEDFtIJ9Iw3jrL8hBJBeFbjQkVaJvnmY1CS3", "KBmFKqYHviQnxPQhQe9U7VOWg5E5LjFFKoqzC7ay");
     @ParseSentence = Parse.Object.extend("Sentence")
+    @ParseKeypress = Parse.Object.extend("Keypress")
     @sentenceQuery = new Parse.Query(@ParseSentence)
 
   initFastclick: ->
@@ -98,7 +115,7 @@ class Runner
 
   handleSentenceStop: ->
     if @onLastSentence()
-      # finish or whatever
+      $submit.show()
     else
       $next.show()
 
@@ -112,5 +129,16 @@ class Runner
     sentences[index + 1].makeCurrent()
     $next.hide()
     $input.focus()
+
+  saveToParse: ->
+    parseObjs = []
+    for keypress in keypresses
+      parseObjs.push keypress.createParseObj()
+
+    Parse.Object.saveAll parseObjs,
+      success: (results) ->
+        console.log results
+      error: (error) ->
+        console.log error
 
 runner = new Runner()
