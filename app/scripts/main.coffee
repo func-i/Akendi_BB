@@ -9,6 +9,9 @@ $next     = $('#next')
 $submit   = $('#submit')
 currentText = ""
 
+$input.on "keydown", (ev) ->
+  ev.preventDefault() if ev.which is 8
+
 $input.on "input", (ev) ->
   currentSentence.start() unless currentSentence.isInProgress or currentSentence.isFinished
   
