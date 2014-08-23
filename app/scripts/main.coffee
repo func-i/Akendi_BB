@@ -13,16 +13,11 @@ $input.on "input", (ev) ->
     
     currentText = $(this).val()
     currentIndex = currentText.length - 1
-    
-    if currentText[currentIndex] is currentSentence.targetText[currentIndex]
-      $sentence.find(".char#{currentText.length}").css
-        color: 'white'
-        backgroundColor: 'lightgreen'
-    else
-      $sentence.find(".char#{currentText.length}").css
-        color: 'white'
-        backgroundColor: 'red'
 
+    keypress = new Keypress
+      index: currentIndex
+      typedChar: currentText[currentIndex]
+      targetChar: currentSentence.targetText[currentIndex]
 
     if currentText.length >= currentSentence.targetText.length
       currentSentence.stop()
@@ -32,6 +27,22 @@ $next.click (ev) ->
   ev.preventDefault()
   runner.showNextSentence()
 
+class Keypress
+  constructor: (args) ->
+    @index = args.index
+    @targetChar = args.targetChar
+    @typedChar = args.typedChar
+    @correct = @typedChar is @targetChar
+    @time = new Date().getTime()
+    @assignCss()
+    currentSentence.keypresses.push this
+
+  assignCss: ->
+    backgroundColor = if @correct then 'lightgreen' else 'red'
+    $sentence.find(".char#{@index + 1}").css
+      color: 'white'
+      backgroundColor: backgroundColor
+
 class Sentence
   constructor: (args) ->
     @parseObj = args.parseObj
@@ -39,6 +50,7 @@ class Sentence
     @targetText = @parseObj.get('text')
     @currentText = ""
     @targetLetters = @targetText.split('')
+    @keypresses = []
     @makeCurrent() if @isCurrent
 
   makeCurrent: ->
