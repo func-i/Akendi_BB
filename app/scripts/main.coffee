@@ -1,6 +1,7 @@
 sentences = []
 currentSentence = null
 
+$start    = $('#start')
 $sentence = $('#sentence')
 $input    = $('input')
 $next     = $('#next')
@@ -22,6 +23,10 @@ $input.on "input", (ev) ->
     if currentText.length >= currentSentence.targetText.length
       currentSentence.stop()
       runner.handleSentenceStop()
+
+$start.click (ev) ->
+  ev.preventDefault()
+  runner.start()
 
 $next.click (ev) ->
   ev.preventDefault()
@@ -46,10 +51,9 @@ class Keypress
 class Sentence
   constructor: (args) ->
     @parseObj = args.parseObj
-    @isCurrent = args.isCurrent
+    @isCurrent = false
     @targetText = @parseObj.get('text')
     @keypresses = []
-    @makeCurrent() if @isCurrent
 
   makeCurrent: ->
     currentSentence = this
@@ -65,6 +69,7 @@ class Sentence
   stop: ->
     @isInProgress = false
     @isFinished = true
+    $input.val ""
 
 class Runner
   constructor: (args) ->
@@ -81,7 +86,6 @@ class Runner
       for result, i in results
         sentence = new Sentence
           parseObj: result
-          isCurrent: i is 0
         sentences.push sentence
 
   onLastSentence: ->
@@ -94,9 +98,15 @@ class Runner
     else
       $next.show()
 
+  start: ->
+    sentences[0].makeCurrent()
+    $start.hide()
+    $input.focus()
+
   showNextSentence: ->
     index = sentences.indexOf(currentSentence)
     sentences[index + 1].makeCurrent()
     $next.hide()
+    $input.focus()
 
 runner = new Runner()
