@@ -88,7 +88,6 @@ class Sentence
   stop: ->
     @isInProgress = false
     @isFinished = true
-    $input.val ""
 
 class Runner
   constructor: (args) ->
@@ -128,12 +127,14 @@ class Runner
   start: ->
     sentences[0].makeCurrent()
     $start.hide()
+    $input.val ""
     $input.focus()
 
   showNextSentence: ->
     index = sentences.indexOf(currentSentence)
     sentences[index + 1].makeCurrent()
     $next.hide()
+    $input.val ""
     $input.focus()
 
   saveToParse: ->
