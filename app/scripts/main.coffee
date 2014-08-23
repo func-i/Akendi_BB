@@ -75,11 +75,15 @@ class Runner
   constructor: (args) ->
     @initParse()
     @getSentences()
+    @initFastclick()
     
   initParse: ->
     Parse.initialize("wn0yAEDFtIJ9Iw3jrL8hBJBeFbjQkVaJvnmY1CS3", "KBmFKqYHviQnxPQhQe9U7VOWg5E5LjFFKoqzC7ay");
     @ParseSentence = Parse.Object.extend("Sentence")
     @sentenceQuery = new Parse.Query(@ParseSentence)
+
+  initFastclick: ->
+    FastClick.attach(document.body)
 
   getSentences: ->
     @sentenceQuery.find().then (results) ->
