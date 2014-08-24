@@ -115,9 +115,12 @@ class Sentence
 class Runner
   constructor: (args) ->
     @initParse()
-    @createTester()
-    @getSentences()
-    @initFastClick()
+    if @isAdmin()
+      @generateCSVs()
+    else
+      @createTester()
+      @getSentences()
+      @initFastClick()
     
   initParse: ->
     Parse.initialize("wn0yAEDFtIJ9Iw3jrL8hBJBeFbjQkVaJvnmY1CS3", "KBmFKqYHviQnxPQhQe9U7VOWg5E5LjFFKoqzC7ay")
@@ -127,6 +130,11 @@ class Runner
         Test: Parse.Object.extend("Test")
         Keypress: Parse.Object.extend("Keypress")
         Tester: Parse.Object.extend("Tester")
+
+  isAdmin: ->
+    parser = document.createElement('a')
+    parser.href = window.location
+    parser.hash is '#admin'
 
   initFastClick: ->
     FastClick.attach(document.body)
@@ -145,6 +153,15 @@ class Runner
           parseObj: result
         sentences.push sentence
 
+  getTests: ->
+    query = new Parse.Query(@parse.objects.Test)
+    query.limit(1000).find()
+
+  generateCSVs: ->
+    @getTests().then (tests) ->
+      array = [['Tester Id', 'Sentence Id', 'Target Character', 'Typed Character', 'Time']]
+      for test in tests
+        console.log test
   onLastSentence: ->
     index = sentences.indexOf(currentSentence)
     sentences.length is index + 1
