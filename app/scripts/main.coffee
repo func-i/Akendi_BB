@@ -60,8 +60,13 @@ class Keypress
     @typedChar = args.typedChar
     @sentence = args.sentence
     @correct = @typedChar is @targetChar
-    @time = new Date().getTime()
+    @setTime()
     @assignCss()
+
+  setTime: ->
+    rawTime = new Date().getTime()
+    @sentence.startTime = rawTime if @index is 0
+    @time = rawTime - @sentence.startTime
 
   assignCss: ->
     backgroundColor = if @correct then 'lightgreen' else 'red'
