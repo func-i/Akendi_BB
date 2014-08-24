@@ -186,8 +186,9 @@ class Runner
     $input.focus()
 
   saveToParse: ->
-    keypresses = _.map currentSentence.keypresses, (keypress) ->
-      keypress.abbrSelf()
+    keypresses = []
+    for keypress in currentSentence.keypresses
+      keypresses.push keypress.abbrSelf()
 
     test = new runner.parse.objects.Test()
     test.set 'keypresses', keypresses
