@@ -1,6 +1,7 @@
 sentences = []
 keypresses = []
 currentSentence = null
+currentUser = null
 
 $html     = $('html')
 $start    = $('#start')
@@ -72,6 +73,7 @@ class Keypress
   createParseObj: ->
     @parseObj = new runner.parse.objects.Keypress()
     @parseObj.set 'sentence', @sentence.parseObj
+    @parseObj.set 'tester', currentUser
     @parseObj.set 'targetChar', @targetChar
     @parseObj.set 'typedChar', @typedChar
     @parseObj.set 'correct', @correct
@@ -102,6 +104,7 @@ class Sentence
 class Runner
   constructor: (args) ->
     @initParse()
+    @createTester()
     @getSentences()
     @initFastClick()
     
@@ -112,9 +115,16 @@ class Runner
         Sentence: Parse.Object.extend("Sentence")
         Test: Parse.Object.extend("Test")
         Keypress: Parse.Object.extend("Keypress")
+        Tester: Parse.Object.extend("Tester")
 
   initFastClick: ->
     FastClick.attach(document.body)
+
+  createTester: ->
+    tester = new @parse.objects.Tester()
+    tester.save null,
+      success: (result) ->
+        currentUser = result
 
   getSentences: ->
     query = new Parse.Query(@parse.objects.Sentence)
