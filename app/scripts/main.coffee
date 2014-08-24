@@ -1,5 +1,4 @@
 sentences = []
-keypresses = []
 currentSentence = null
 currentUser = null
 
@@ -33,7 +32,7 @@ $input.on "input", (ev) ->
       typedChar: currentText[currentIndex]
       targetChar: currentSentence.targetText[currentIndex]
       sentence: currentSentence
-    keypresses.push keypress
+    currentSentence.keypresses.push keypress
 
     if currentText.length >= currentSentence.targetText.length
       currentSentence.stop()
@@ -80,11 +79,18 @@ class Keypress
     @parseObj.set 'time', @time
     @parseObj
 
+  abbrSelf: ->
+    index: @index
+    targetChar: @targetChar
+    typedChar: @typedChar
+    time: @time
+
 class Sentence
   constructor: (args) ->
     @parseObj = args.parseObj
     @isCurrent = false
     @targetText = @parseObj.get('text')
+    @keypresses = []
 
   makeCurrent: ->
     currentSentence = this
@@ -158,14 +164,14 @@ class Runner
     $input.focus()
 
   saveToParse: ->
-    parseObjs = []
-    for keypress in keypresses
-      parseObjs.push keypress.createParseObj()
+    keypresses = _.map currentSentence.keypresses, (keypress) ->
+      keypress.abbrSelf()
 
-    Parse.Object.saveAll parseObjs,
-      success: (results) ->
-        console.log results
-      error: (error) ->
-        console.log error
+    test = new runner.parse.objects.Test()
+    test.set 'keypresses', keypresses
+    test.set 'testerId', currentUser.id
+    test.set 'sentenceId', currentSentence.parseObj.id
+    test.save().then (result) ->
+      # something on success
 
 runner = new Runner()
