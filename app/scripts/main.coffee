@@ -2,12 +2,19 @@ sentences = []
 keypresses = []
 currentSentence = null
 
+$html     = $('html')
 $start    = $('#start')
 $sentence = $('#sentence')
 $input    = $('input')
 $next     = $('#next')
 $submit   = $('#submit')
 currentText = ""
+
+$html.on "click", (ev) ->
+  ev.preventDefault()
+  $input.focus()
+  inputLength = $input.val().length
+  $input[0].setSelectionRange(inputLength, inputLength)   
 
 $input.on "keydown", (ev) ->
   ev.preventDefault() if ev.which is 8
@@ -33,14 +40,17 @@ $input.on "input", (ev) ->
 
 $submit.click (ev) ->
   ev.preventDefault()
+  ev.stopPropagation()
   runner.saveToParse()
 
 $start.click (ev) ->
   ev.preventDefault()
+  ev.stopPropagation()
   runner.start()
 
 $next.click (ev) ->
   ev.preventDefault()
+  ev.stopPropagation()
   runner.showNextSentence()
 
 class Keypress
