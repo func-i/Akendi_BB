@@ -70,11 +70,18 @@ class Sentence
     $sentence.text @expectedText
     $sentence.lettering()
 
+  setSpeedInWpm: ->
+    timeInMin = (@timeInMs / 1000) / 60
+    rawSpeedInWpm = (@actualText.length / 5) / timeInMin
+    @speedInWpm = Math.round(rawSpeedInWpm * 100) / 100
+
   start: ->
     @isInProgress = true
 
   stop: ->
+    @timeInMs = (new Date().getTime()) - @startTime
     @actualText = $input.val()
+    @setSpeedInWpm()
     @isInProgress = false
     @isFinished = true
 
@@ -128,10 +135,10 @@ class Runner
       array = [['Tester Id', 'Sentence Id', 'Target Character', 'Typed Character', 'Time']]
       for test in tests
         console.log test
-  onLastSentence: ->
-    index = sentences.indexOf(currentSentence)
-    sentences.length is index + 1
 
+  # end: ->
+  #   $submit.show()
+  #   $next.show()
 
   start: ->
     sentences[0].makeCurrent()
@@ -156,6 +163,8 @@ class Runner
     test.set 'testerId', currentUser.id
     test.set 'actualText', currentSentence.actualText
     test.set 'expectedText', currentSentence.actualText
+    test.set 'timeInMs', currentSentence.timeInMs
+    test.set 'speedInWpm', currentSentence.speedInWpm
     test.save().then (result) ->
       # something on success
 
