@@ -162,7 +162,7 @@ class Runner
     test.set 'rawKeypresses', rawKeypresses
     test.set 'testerId', currentUser.id
     test.set 'actualText', currentSentence.actualText
-    test.set 'expectedText', currentSentence.actualText
+    test.set 'expectedText', currentSentence.expectedText
     test.set 'timeInMs', currentSentence.timeInMs
     test.set 'speedInWpm', currentSentence.speedInWpm
     test.save().then (result) ->
