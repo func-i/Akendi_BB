@@ -45,18 +45,11 @@ class Keypress
     @sentence = args.sentence
     @index = @sentence.keypresses.length
     @setTime()
-    @assignCss()
 
   setTime: ->
     rawTime = new Date().getTime()
     @sentence.startTime = rawTime if @index is 0
     @time = rawTime - @sentence.startTime
-
-  assignCss: ->
-    backgroundColor = if @correct then 'lightgreen' else 'red'
-    $sentence.find(".char#{@index + 1}").css
-      color: 'white'
-      backgroundColor: backgroundColor
 
   createParseObj: ->
     @parseObj = new runner.parse.objects.Keypress()
