@@ -22,7 +22,7 @@ $input.on "keypress", (ev) ->
   currentSentence.start() unless currentSentence.isInProgress or currentSentence.isFinished
   if currentSentence.isInProgress
     keypress = new Keypress
-      keyCode: ev.keyCode
+      char: String.fromCharCode(ev.charCode)
       sentence: currentSentence
     currentSentence.rawKeypresses.push keypress
 
@@ -40,7 +40,7 @@ $submit.click (ev) ->
 
 class Keypress
   constructor: (args) ->
-    @keyCode = args.keyCode
+    @char = args.char
     @sentence = args.sentence
     @index = @sentence.rawKeypresses.length
     @setTime()
@@ -52,8 +52,8 @@ class Keypress
 
   abbrSelf: ->
     index: @index
-    keyCode: @keyCode
     time: @time
+    char: @char
 
 class Sentence
   constructor: (args) ->
