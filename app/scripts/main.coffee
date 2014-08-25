@@ -35,7 +35,6 @@ $submit.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
   currentSentence.stop()
-  runner.handleSentenceStop()
   runner.saveToParse()
   runner.showNextSentence()
 
@@ -132,11 +131,6 @@ class Runner
     index = sentences.indexOf(currentSentence)
     sentences.length is index + 1
 
-  handleSentenceStop: ->
-    if @onLastSentence()
-      $submit.show()
-    else
-      $next.show()
 
   start: ->
     sentences[0].makeCurrent()
