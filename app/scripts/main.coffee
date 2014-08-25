@@ -24,7 +24,7 @@ $input.on "keypress", (ev) ->
     keypress = new Keypress
       keyCode: ev.keyCode
       sentence: currentSentence
-    currentSentence.keypresses.push keypress
+    currentSentence.rawKeypresses.push keypress
 
 $start.click (ev) ->
   ev.preventDefault()
@@ -43,7 +43,7 @@ class Keypress
   constructor: (args) ->
     @keyCode = args.keyCode
     @sentence = args.sentence
-    @index = @sentence.keypresses.length
+    @index = @sentence.rawKeypresses.length
     @setTime()
 
   setTime: ->
@@ -61,7 +61,7 @@ class Sentence
     @parseObj = args.parseObj
     @isCurrent = false
     @targetText = @parseObj.get('text')
-    @keypresses = []
+    @rawKeypresses = []
 
   makeCurrent: ->
     currentSentence = this
@@ -152,12 +152,12 @@ class Runner
     $input.focus()
 
   saveToParse: ->
-    keypresses = []
-    for keypress in currentSentence.keypresses
-      keypresses.push keypress.abbrSelf()
+    rawKeypresses = []
+    for keypress in currentSentence.rawKeypresses
+      rawKeypresses.push keypress.abbrSelf()
 
     test = new runner.parse.objects.Test()
-    test.set 'keypresses', keypresses
+    test.set 'rawKeypresses', rawKeypresses
     test.set 'testerId', currentUser.id
     test.set 'sentenceId', currentSentence.parseObj.id
     test.save().then (result) ->
