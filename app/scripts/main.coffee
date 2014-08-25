@@ -59,7 +59,7 @@ class Sentence
   constructor: (args) ->
     @parseObj = args.parseObj
     @isCurrent = false
-    @targetText = @parseObj.get('text')
+    @expectedText = @parseObj.get('text')
     @rawKeypresses = []
 
   makeCurrent: ->
@@ -67,13 +67,14 @@ class Sentence
     @loadText()
 
   loadText: ->
-    $sentence.text @targetText
+    $sentence.text @expectedText
     $sentence.lettering()
 
   start: ->
     @isInProgress = true
 
   stop: ->
+    @actualText = $input.val()
     @isInProgress = false
     @isFinished = true
 
@@ -154,6 +155,8 @@ class Runner
     test.set 'rawKeypresses', rawKeypresses
     test.set 'testerId', currentUser.id
     test.set 'sentenceId', currentSentence.parseObj.id
+    test.set 'actualText', currentSentence.actualText
+    test.set 'expectedText', currentSentence.actualText
     test.save().then (result) ->
       # something on success
 
