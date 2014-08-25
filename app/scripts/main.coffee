@@ -51,16 +51,6 @@ class Keypress
     @sentence.startTime = rawTime if @index is 0
     @time = rawTime - @sentence.startTime
 
-  createParseObj: ->
-    @parseObj = new runner.parse.objects.Keypress()
-    @parseObj.set 'sentence', @sentence.parseObj
-    @parseObj.set 'tester', currentUser
-    @parseObj.set 'targetChar', @targetChar
-    @parseObj.set 'typedChar', @typedChar
-    @parseObj.set 'correct', @correct
-    @parseObj.set 'time', @time
-    @parseObj
-
   abbrSelf: ->
     index: @index
     time: @time
