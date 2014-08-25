@@ -53,6 +53,7 @@ class Keypress
 
   abbrSelf: ->
     index: @index
+    keyCode: @keyCode
     time: @time
 
 class Sentence
