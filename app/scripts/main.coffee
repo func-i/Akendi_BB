@@ -8,7 +8,6 @@ $sentence = $('#sentence')
 $input    = $('input')
 $next     = $('#next')
 $submit   = $('#submit')
-currentText = ""
 
 $html.on "click", (ev) ->
   ev.preventDefault()
@@ -19,47 +18,32 @@ $html.on "click", (ev) ->
 $input.on "keydown", (ev) ->
   ev.preventDefault() if ev.which is 8
 
-$input.on "input", (ev) ->
+$input.on "keypress", (ev) ->
   currentSentence.start() unless currentSentence.isInProgress or currentSentence.isFinished
-  
   if currentSentence.isInProgress
-
-    currentText = $(this).val()
-    currentIndex = currentText.length - 1
-
     keypress = new Keypress
-      index: currentIndex
-      typedChar: currentText[currentIndex]
-      targetChar: currentSentence.targetText[currentIndex]
+      keyCode: ev.keyCode
       sentence: currentSentence
     currentSentence.keypresses.push keypress
-
-    if currentText.length >= currentSentence.targetText.length
-      currentSentence.stop()
-      runner.handleSentenceStop()
-
-$submit.click (ev) ->
-  ev.preventDefault()
-  ev.stopPropagation()
-  runner.saveToParse()
 
 $start.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
   runner.start()
 
-$next.click (ev) ->
+$submit.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
+  currentSentence.stop()
+  runner.handleSentenceStop()
+  runner.saveToParse()
   runner.showNextSentence()
 
 class Keypress
   constructor: (args) ->
-    @index = args.index
-    @targetChar = args.targetChar
-    @typedChar = args.typedChar
+    @keyCode = args.keyCode
     @sentence = args.sentence
-    @correct = @typedChar is @targetChar
+    @index = @sentence.keypresses.length
     @setTime()
     @assignCss()
 
@@ -86,8 +70,6 @@ class Keypress
 
   abbrSelf: ->
     index: @index
-    targetChar: @targetChar
-    typedChar: @typedChar
     time: @time
 
 class Sentence
