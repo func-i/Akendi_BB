@@ -43,17 +43,17 @@ class Keypress
     @char = args.char
     @sentence = args.sentence
     @index = @sentence.rawKeypresses.length
-    @setTime()
+    @setTimeSinceStart()
 
-  setTime: ->
+  setTimeSinceStart: ->
     rawTime = new Date().getTime()
     @sentence.startTime = rawTime if @index is 0
-    @time = rawTime - @sentence.startTime
+    @timeSinceStart = rawTime - @sentence.startTime
 
   abbrSelf: ->
     index: @index
-    time: @time
     char: @char
+    timeSinceStart: @timeSinceStart
 
 class Sentence
   constructor: (args) ->
