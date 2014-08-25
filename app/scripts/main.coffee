@@ -81,12 +81,12 @@ class Sentence
 class Runner
   constructor: (args) ->
     @initParse()
+    @initFastClick()
     if @isAdmin()
       @generateCSVs()
     else
       @createTester()
       @getSentences()
-      @initFastClick()
     
   initParse: ->
     Parse.initialize("wn0yAEDFtIJ9Iw3jrL8hBJBeFbjQkVaJvnmY1CS3", "KBmFKqYHviQnxPQhQe9U7VOWg5E5LjFFKoqzC7ay")
