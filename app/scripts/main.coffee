@@ -154,7 +154,6 @@ class Runner
     test = new runner.parse.objects.Test()
     test.set 'rawKeypresses', rawKeypresses
     test.set 'testerId', currentUser.id
-    test.set 'sentenceId', currentSentence.parseObj.id
     test.set 'actualText', currentSentence.actualText
     test.set 'expectedText', currentSentence.actualText
     test.save().then (result) ->
