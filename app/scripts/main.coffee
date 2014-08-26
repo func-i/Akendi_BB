@@ -29,7 +29,7 @@ $input.on "keypress", (ev) ->
 $start.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
-  runner.start()
+  runner.startTest()
 
 $submit.click (ev) ->
   ev.preventDefault()
@@ -138,7 +138,7 @@ class Runner
       for test in tests
         console.log test
 
-  start: ->
+  startTest: ->
     sentences[0].makeCurrent()
     $start.hide()
     $input.val ""
