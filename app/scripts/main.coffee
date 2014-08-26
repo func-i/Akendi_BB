@@ -3,7 +3,8 @@ currentSentence = null
 currentUser = null
 
 $html     = $('html')
-$practiceInstructions = $('#practice-instructions')
+$instructions = $('.instructions')
+$start = $instructions.find('.start')
 $inProgress = $('#in-progress')
 $sentenceForm = $('#sentence-form')
 $textarea     = $sentenceForm.find('textarea')
@@ -27,11 +28,6 @@ $textarea.on "keypress", (ev) ->
       char: String.fromCharCode(ev.charCode)
       sentence: currentSentence
     currentSentence.rawKeypresses.push keypress
-
-$practiceInstructions.click (ev) ->
-  ev.preventDefault()
-  ev.stopPropagation()
-  app.startTest()
 
 $start.click (ev) ->
   ev.preventDefault()
@@ -148,7 +144,7 @@ class App
 
   startTest: ->
     sentences[0].makeCurrent()
-    $practiceInstructions.hide()
+    $instructions.hide()
     $inProgress.show()
     $textarea.val ""
     $textarea.focus()
@@ -161,7 +157,7 @@ class App
     $textarea.focus()
 
   initPractice: ->
-    $practiceInstructions.show()
+    $('.practice.instructions').show()
 
   saveToParse: ->
     rawKeypresses = []
