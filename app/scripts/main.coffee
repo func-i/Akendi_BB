@@ -104,7 +104,6 @@ class App
         @initPractice()
     
   initParse: ->
-    app = this
     Parse.initialize("wn0yAEDFtIJ9Iw3jrL8hBJBeFbjQkVaJvnmY1CS3", "KBmFKqYHviQnxPQhQe9U7VOWg5E5LjFFKoqzC7ay")
     @parse =
       objects:
@@ -114,17 +113,17 @@ class App
         Tester: Parse.Object.extend("Tester")
         Config: Parse.Object.extend("Config")
       api:
-        getConfig: ->
-          query = new Parse.Query(app.parse.objects.Config)
+        getConfig: =>
+          query = new Parse.Query(@parse.objects.Config)
           query.first()
-        createTester: ->
-          tester = new app.parse.objects.Tester()
+        createTester: =>
+          tester = new @parse.objects.Tester()
           tester.save()
-        getSentences: ->
-          query = new Parse.Query(app.parse.objects.Sentence)
+        getSentences: =>
+          query = new Parse.Query(@parse.objects.Sentence)
           query.find()
-        getTests: ->
-          query = new Parse.Query(app.parse.objects.Test)
+        getTests: =>
+          query = new Parse.Query(@parse.objects.Test)
           query.limit(1000).find()
 
   init: ->
