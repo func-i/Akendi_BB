@@ -4,21 +4,22 @@ currentUser = null
 
 $html     = $('html')
 $start    = $('#start')
+$sentenceForm = $('#sentence-form')
+$textarea     = $sentenceForm.find('textarea')
+$submit       = $sentenceForm.find('input[type="submit"]')
 $sentence = $('#sentence')
-$input    = $('input')
 $next     = $('#next')
-$submit   = $('#submit')
 
 $html.on "click", (ev) ->
   ev.preventDefault()
-  $input.focus()
-  inputLength = $input.val().length
-  $input[0].setSelectionRange(inputLength, inputLength)   
+  $textarea.focus()
+  inputLength = $textarea.val().length
+  $textarea[0].setSelectionRange(inputLength, inputLength)   
 
-$input.on "keydown", (ev) ->
+$textarea.on "keydown", (ev) ->
   ev.preventDefault() if ev.which is 8
 
-$input.on "keypress", (ev) ->
+$textarea.on "keypress", (ev) ->
   currentSentence.start() unless currentSentence.isInProgress or currentSentence.isFinished
   if currentSentence.isInProgress
     keypress = new Keypress
@@ -80,7 +81,7 @@ class Sentence
 
   stop: ->
     @timeInMs = (new Date().getTime()) - @startTime
-    @actualText = $input.val()
+    @actualText = $textarea.val()
     @setSpeedInWpm()
     @isInProgress = false
     @isFinished = true
@@ -141,15 +142,15 @@ class Runner
   startTest: ->
     sentences[0].makeCurrent()
     $start.hide()
-    $input.val ""
-    $input.focus()
+    $textarea.val ""
+    $textarea.focus()
 
   showNextSentence: ->
     index = sentences.indexOf(currentSentence)
     sentences[index + 1].makeCurrent()
     $next.hide()
-    $input.val ""
-    $input.focus()
+    $textarea.val ""
+    $textarea.focus()
 
   saveToParse: ->
     rawKeypresses = []
