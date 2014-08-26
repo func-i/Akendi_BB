@@ -123,7 +123,7 @@ class Runner
     Parse.Promise.when(@parse.api.getConfig(), @parse.api.createTester(), @parse.api.getSentences()).done (configResult, testerResult, sentenceResults) ->
       config = configResult
       currentUser = testerResult
-      for sentenceResult in sentenceResults
+      for sentenceResult in _.shuffle(sentenceResults)
         sentence = new Sentence
           parseObj: sentenceResult
         sentences.push sentence
