@@ -61,6 +61,7 @@ class Sentence
     @parseObj = args.parseObj
     @isCurrent = false
     @expectedText = @parseObj.get('text')
+    @isPractice = @parseObj.get('isPractice')
     @rawKeypresses = []
 
   makeCurrent: ->
@@ -126,7 +127,7 @@ class App
       for sentenceResult in _.shuffle(sentenceResults)
         sentence = new Sentence
           parseObj: sentenceResult
-        sentences.push sentence
+        sentences.push sentence if sentence.isPractice
 
   isAdmin: ->
     parser = document.createElement('a')
