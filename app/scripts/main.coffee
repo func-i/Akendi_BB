@@ -30,14 +30,14 @@ $textarea.on "keypress", (ev) ->
 $start.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
-  runner.startTest()
+  app.startTest()
 
 $submit.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
   currentSentence.stop()
-  runner.saveToParse()
-  runner.showNextSentence()
+  app.saveToParse()
+  app.showNextSentence()
 
 class Keypress
   constructor: (args) ->
@@ -86,7 +86,7 @@ class Sentence
     @isInProgress = false
     @isFinished = true
 
-class Runner
+class App
   constructor: (args) ->
     @initParse()
     FastClick.attach(document.body)
@@ -96,7 +96,7 @@ class Runner
       @initTest()
     
   initParse: ->
-    runner = this
+    app = this
     Parse.initialize("wn0yAEDFtIJ9Iw3jrL8hBJBeFbjQkVaJvnmY1CS3", "KBmFKqYHviQnxPQhQe9U7VOWg5E5LjFFKoqzC7ay")
     @parse =
       objects:
@@ -107,16 +107,16 @@ class Runner
         Config: Parse.Object.extend("Config")
       api:
         getConfig: ->
-          query = new Parse.Query(runner.parse.objects.Config)
+          query = new Parse.Query(app.parse.objects.Config)
           query.first()
         createTester: ->
-          tester = new runner.parse.objects.Tester()
+          tester = new app.parse.objects.Tester()
           tester.save()
         getSentences: ->
-          query = new Parse.Query(runner.parse.objects.Sentence)
+          query = new Parse.Query(app.parse.objects.Sentence)
           query.find()
         getTests: ->
-          query = new Parse.Query(runner.parse.objects.Test)
+          query = new Parse.Query(app.parse.objects.Test)
           query.limit(1000).find()
 
   initTest: ->
@@ -157,7 +157,7 @@ class Runner
     for keypress in currentSentence.rawKeypresses
       rawKeypresses.push keypress.abbrSelf()
 
-    test = new runner.parse.objects.Test()
+    test = new app.parse.objects.Test()
     test.set 'rawKeypresses', rawKeypresses
     test.set 'testerId', currentUser.id
     test.set 'actualText', currentSentence.actualText
@@ -167,4 +167,4 @@ class Runner
     test.save().then (result) ->
       # something on success
 
-runner = new Runner()
+app = new App()
