@@ -1,16 +1,21 @@
+allSentences = []
 sentences = []
 currentSentence = null
 currentUser = null
+config = null
 
-$html     = $('html')
+$html = $('html')
 $instructions = $('.instructions')
 $start = $instructions.find('.start')
+$end = $('.end')
+$practiceEnd = $('.practice.end')
+$next = $practiceEnd.find('.next')
+$sessionEnd = $('.session.end')
 $inProgress = $('#in-progress')
 $sentenceForm = $('#sentence-form')
 $textarea     = $sentenceForm.find('textarea')
 $submit       = $sentenceForm.find('input[type="submit"]')
 $sentence = $('#sentence')
-$next     = $('#next')
 
 $html.on "click", (ev) ->
   ev.preventDefault()
@@ -34,12 +39,20 @@ $start.click (ev) ->
   ev.stopPropagation()
   app.startTest()
 
+$next.click (ev) ->
+  ev.preventDefault()
+  ev.stopPropagation()
+  app.startTest()
+
 $submit.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
   currentSentence.stop()
   app.saveToParse()
-  app.showNextSentence()
+  if app.outOfTime()
+    app.stopTest()
+  else
+    app.showNextSentence()
 
 class Keypress
   constructor: (args) ->
@@ -123,18 +136,21 @@ class App
           query.limit(1000).find()
 
   init: ->
-    Parse.Promise.when(@parse.api.getConfig(), @parse.api.createTester(), @parse.api.getSentences()).done (configResult, testerResult, sentenceResults) ->
-      config = configResult
+    Parse.Promise.when(@parse.api.getConfig(), @parse.api.createTester(), @parse.api.getSentences()).done (configResult, testerResult, sentenceResults) =>
+      @config = configResult
       currentUser = testerResult
       for sentenceResult in _.shuffle(sentenceResults)
         sentence = new Sentence
           parseObj: sentenceResult
-        sentences.push sentence if sentence.isPractice
+        allSentences.push sentence
 
   isAdmin: ->
     parser = document.createElement('a')
     parser.href = window.location
     parser.hash is '#admin'
+
+  maxTime: ->
+    if @isPractice then @config.get('practiceTime') else @config.get('experimentTime')
 
   generateCSVs: ->
     @parse.api.getTests().then (tests) ->
@@ -142,22 +158,38 @@ class App
       for test in tests
         console.log test
 
+  outOfTime: ->
+    (new Date().getTime()) - @startTime > @maxTime()
+
   startTest: ->
     sentences[0].makeCurrent()
+    @startTime = new Date().getTime()
     $instructions.hide()
+    $end.hide()
     $inProgress.show()
     $textarea.val ""
     $textarea.focus()
 
+  stopTest: ->
+    if @isPractice
+      $end = $practiceEnd
+      sentences = _.where allSentences, { isPractice: false }
+      @isPractice = false
+    else
+      $end = $sessionEnd
+    $end.show()
+    $inProgress.hide()
+
   showNextSentence: ->
     index = sentences.indexOf(currentSentence)
     sentences[index + 1].makeCurrent()
-    $next.hide()
     $textarea.val ""
     $textarea.focus()
 
   initPractice: ->
     $('.practice.instructions').show()
+    @isPractice = true
+    sentences = _.where allSentences, { isPractice: true }
 
   saveToParse: ->
     rawKeypresses = []
