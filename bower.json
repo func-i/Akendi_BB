@@ -4,7 +4,9 @@
   "dependencies": {
     "jquery": "~1.11.0",
     "normalize.css": "~3.0.1",
-    "fastclick": "~1.0.3"
+    "fastclick": "~1.0.3",
+    "bootstrap-sass-official": "~3.2.0+1",
+    "underscore": "~1.6.0"
   },
   "devDependencies": {
     "underscore": "~1.6.0"
