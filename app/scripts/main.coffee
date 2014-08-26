@@ -141,10 +141,6 @@ class Runner
       for test in tests
         console.log test
 
-  # end: ->
-  #   $submit.show()
-  #   $next.show()
-
   start: ->
     sentences[0].makeCurrent()
     $start.hide()
