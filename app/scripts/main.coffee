@@ -42,7 +42,8 @@ $start.click (ev) ->
 $next.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
-  app.startTest()
+  $practiceEnd.hide()
+  $('.experiment.instructions').show()
 
 $submit.click (ev) ->
   ev.preventDefault()
