@@ -49,7 +49,6 @@ $submit.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
   currentSentence.stop()
-  app.saveToParse()
   if app.outOfTime()
     app.stopTest()
   else
@@ -102,6 +101,21 @@ class Sentence
     @setSpeedInWpm()
     @isInProgress = false
     @isFinished = true
+    @saveToParse() unless app.isPractice
+
+  saveToParse: ->
+    rawKeypresses = []
+    for keypress in @rawKeypresses
+      rawKeypresses.push keypress.abbrSelf()
+
+    test = new app.parse.objects.Test()
+    test.set 'rawKeypresses', rawKeypresses
+    test.set 'testerId', currentUser.id
+    test.set 'actualText', @actualText
+    test.set 'expectedText', @expectedText
+    test.set 'timeInMs', @timeInMs
+    test.set 'speedInWpm', @speedInWpm
+    test.save()
 
 class App
   constructor: (args) ->
@@ -191,20 +205,5 @@ class App
     $('.practice.instructions').show()
     @isPractice = true
     sentences = _.where allSentences, { isPractice: true }
-
-  saveToParse: ->
-    rawKeypresses = []
-    for keypress in currentSentence.rawKeypresses
-      rawKeypresses.push keypress.abbrSelf()
-
-    test = new app.parse.objects.Test()
-    test.set 'rawKeypresses', rawKeypresses
-    test.set 'testerId', currentUser.id
-    test.set 'actualText', currentSentence.actualText
-    test.set 'expectedText', currentSentence.expectedText
-    test.set 'timeInMs', currentSentence.timeInMs
-    test.set 'speedInWpm', currentSentence.speedInWpm
-    test.save().then (result) ->
-      # something on success
 
 app = new App()
