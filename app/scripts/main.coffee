@@ -88,7 +88,7 @@ class Sentence
 class Runner
   constructor: (args) ->
     @initParse()
-    @initFastClick()
+    FastClick.attach(document.body)
     if @isAdmin()
       @generateCSVs()
     else
@@ -131,9 +131,6 @@ class Runner
     parser = document.createElement('a')
     parser.href = window.location
     parser.hash is '#admin'
-
-  initFastClick: ->
-    FastClick.attach(document.body)
 
   generateCSVs: ->
     @parse.api.getTests().then (tests) ->
