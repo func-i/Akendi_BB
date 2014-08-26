@@ -17,6 +17,7 @@ els =
   $textarea:     $('#sentence-form textarea')
   $submit:       $('#sentence-form input[type="submit"]')
   $sentence:     $('#sentence')
+  $admin:        $('#admin')
 
 els.$html.on "click", (ev) ->
   ev.preventDefault()
@@ -123,6 +124,7 @@ class App
     FastClick.attach(document.body)
     if @isAdmin()
       @generateCSVs()
+      els.$html.off "click"
     else
       @init().then =>
         @initPractice()
@@ -169,9 +171,56 @@ class App
 
   generateCSVs: ->
     @parse.api.getTests().then (tests) ->
-      array = [['Tester Id', 'Sentence Id', 'Target Character', 'Typed Character', 'Time']]
+      # array = [['Tester Id', 'Sentence Id', 'Target Character', 'Typed Character', 'Time']]
+      testsFormatted = []
+      rawKeypressesFormatted = []
       for test in tests
-        console.log test
+        testId = test.id
+        testFormatted =
+          'Id': testId
+          'Tester Id': test.get('testerId')
+          'Actual Text': test.get('actualText')
+          'Expected Text': test.get('expectedText')
+          'Time in MS': test.get 'timeInMs'
+          'Speed in WPM': test.get 'speedInWpm'
+        testsFormatted.push testFormatted
+
+        for rawKeypress in test.get('rawKeypresses')
+          rawKeypressFormatted =
+            'Test Id': testId
+            'Index': rawKeypress.index
+            'Character': rawKeypress.char
+            'Time in MS since start': rawKeypress.timeSinceStart
+          rawKeypressesFormatted.push rawKeypressFormatted
+
+      now = new Date()
+      timeString = "#{now.getFullYear()}-#{now.getMonth()}-#{now.getDate()}-#{now.getTime()}"
+
+      testsCsv = JSONToCSVConvertor testsFormatted, 'Tests', true
+      testsUri = "data:text/csv;charset=utf-8," + escape(testsCsv)
+
+      $div = $('<div/>')
+      $downloadTests = $ '<a/>',
+        href: testsUri
+        download: "tests-#{timeString}.csv"
+        html: 'Tests'
+        class: 'btn btn-success'
+      .appendTo $div
+      $div.appendTo els.$admin
+
+      rawKeypressesCsv = JSONToCSVConvertor rawKeypressesFormatted, 'Raw Keypresses', true
+      rawKeypressesUri = "data:text/csv;charset=utf-8," + escape(rawKeypressesCsv)
+
+      $div = $('<div/>')
+      $downloadRawKeypresses = $ '<a/>',
+        href: rawKeypressesUri
+        download: "raw-keypresses-#{timeString}.csv"
+        html: 'Raw Keypresses'
+        class: 'btn btn-success'
+      .appendTo $div
+      $div.appendTo els.$admin
+
+      els.$admin.show()
 
   outOfTime: ->
     (new Date().getTime()) - @startTime > @maxTime()
