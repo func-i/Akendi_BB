@@ -20,42 +20,47 @@
     <!--[if lt IE 10]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
+    <div class="container-fluid">
 
-    <div class="practice instructions" style="display: none">
-      <h3>Practice Round</h3>
-      <p>
-        Instructions: YOLO slow-carb twee cardigan. Shoreditch tofu master cleanse gentrify bitters. Biodiesel umami pour-over, sartorial Tonx kitsch sustainable kale chips food truck jean shorts next level chia crucifix XOXO Thundercats.
-      </p>
-      <a href="" class="start">Start Practice</a>
+      <div class="practice instructions" style="display: none">
+        <h3>Practice Round</h3>
+        <p>
+          Instructions: YOLO slow-carb twee cardigan. Shoreditch tofu master cleanse gentrify bitters. Biodiesel umami pour-over, sartorial Tonx kitsch sustainable kale chips food truck jean shorts next level chia crucifix XOXO Thundercats.
+        </p>
+        <a href="" class="start btn btn-success">Start Practice</a>
+      </div>
+
+      <div class="practice end" style="display: none">
+        <h3>End of Practice Round</h3>
+        <a href="" class="next btn btn-default">Next</a>
+      </div>
+
+      <div class="experiment instructions" style="display: none">
+        <h3>Experimental Round</h3>
+        <p>
+          Instructions: YOLO slow-carb twee cardigan. Shoreditch tofu master cleanse gentrify bitters. Biodiesel umami pour-over, sartorial Tonx kitsch sustainable kale chips food truck jean shorts next level chia crucifix XOXO Thundercats.
+        </p>
+        <a href="" class="start btn btn-success">Start</a>
+      </div>
+
+      <div class="session end" style="display: none">
+        <h3>End of Session</h3>
+        <a href="" class="done btn btn-default">Done</a>
+      </div>
+
+      <div id="in-progress" style="display: none">
+        <h4 id="sentence" class="lead"></h4>
+        <form id="sentence-form">
+          <div class="form-group">
+            <textarea class="form-control" rows="6"></textarea>
+          </div>
+          <input type="submit" value="Submit" class="btn btn-primary">
+        </form>
+      </div>
+
     </div>
 
-    <div class="practice end" style="display: none">
-      <h3>End of Practice Round</h3>
-      <a href="" class="next">Next</a>
-    </div>
-
-    <div class="experiment instructions" style="display: none">
-      <h3>Experimental Round</h3>
-      <p>
-        Instructions: YOLO slow-carb twee cardigan. Shoreditch tofu master cleanse gentrify bitters. Biodiesel umami pour-over, sartorial Tonx kitsch sustainable kale chips food truck jean shorts next level chia crucifix XOXO Thundercats.
-      </p>
-      <a href="" class="start">Start</a>
-    </div>
-
-    <div class="session end" style="display: none">
-      <h3>End of Session</h3>
-      <a href="" class="done">Done</a>
-    </div>
-
-    <div id="in-progress" style="display: none">
-      <div id="sentence"></div>
-      <form id="sentence-form">
-        <div>
-          <textarea></textarea>
-        </div>
-        <input type="submit" value="Submit">
-      </form>
-    </div>
+      
 
     <!-- build:js scripts/vendor.js -->
     <!-- bower:js -->
