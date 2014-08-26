@@ -92,10 +92,10 @@ class Runner
     if @isAdmin()
       @generateCSVs()
     else
-      @createTester()
-      @getSentences()
+      @initTest()
     
   initParse: ->
+    runner = this
     Parse.initialize("wn0yAEDFtIJ9Iw3jrL8hBJBeFbjQkVaJvnmY1CS3", "KBmFKqYHviQnxPQhQe9U7VOWg5E5LjFFKoqzC7ay")
     @parse =
       objects:
@@ -103,6 +103,29 @@ class Runner
         Test: Parse.Object.extend("Test")
         Keypress: Parse.Object.extend("Keypress")
         Tester: Parse.Object.extend("Tester")
+        Config: Parse.Object.extend("Config")
+      api:
+        getConfig: ->
+          query = new Parse.Query(runner.parse.objects.Config)
+          query.first()
+        createTester: ->
+          tester = new runner.parse.objects.Tester()
+          tester.save()
+        getSentences: ->
+          query = new Parse.Query(runner.parse.objects.Sentence)
+          query.find()
+        getTests: ->
+          query = new Parse.Query(runner.parse.objects.Test)
+          query.limit(1000).find()
+
+  initTest: ->
+    Parse.Promise.when(@parse.api.getConfig(), @parse.api.createTester(), @parse.api.getSentences()).done (configResult, testerResult, sentenceResults) ->
+      config = configResult
+      currentUser = testerResult
+      for sentenceResult in sentenceResults
+        sentence = new Sentence
+          parseObj: sentenceResult
+        sentences.push sentence
 
   isAdmin: ->
     parser = document.createElement('a')
@@ -112,26 +135,8 @@ class Runner
   initFastClick: ->
     FastClick.attach(document.body)
 
-  createTester: ->
-    tester = new @parse.objects.Tester()
-    tester.save null,
-      success: (result) ->
-        currentUser = result
-
-  getSentences: ->
-    query = new Parse.Query(@parse.objects.Sentence)
-    query.find().then (results) ->
-      for result in results
-        sentence = new Sentence
-          parseObj: result
-        sentences.push sentence
-
-  getTests: ->
-    query = new Parse.Query(@parse.objects.Test)
-    query.limit(1000).find()
-
   generateCSVs: ->
-    @getTests().then (tests) ->
+    @parse.api.getTests().then (tests) ->
       array = [['Tester Id', 'Sentence Id', 'Target Character', 'Typed Character', 'Time']]
       for test in tests
         console.log test
