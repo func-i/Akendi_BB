@@ -3,7 +3,8 @@ currentSentence = null
 currentUser = null
 
 $html     = $('html')
-$start    = $('#start')
+$practiceInstructions = $('#practice-instructions')
+$inProgress = $('#in-progress')
 $sentenceForm = $('#sentence-form')
 $textarea     = $sentenceForm.find('textarea')
 $submit       = $sentenceForm.find('input[type="submit"]')
@@ -26,6 +27,11 @@ $textarea.on "keypress", (ev) ->
       char: String.fromCharCode(ev.charCode)
       sentence: currentSentence
     currentSentence.rawKeypresses.push keypress
+
+$practiceInstructions.click (ev) ->
+  ev.preventDefault()
+  ev.stopPropagation()
+  app.startTest()
 
 $start.click (ev) ->
   ev.preventDefault()
@@ -94,7 +100,8 @@ class App
     if @isAdmin()
       @generateCSVs()
     else
-      @initTest()
+      @init().then =>
+        @initPractice()
     
   initParse: ->
     app = this
@@ -120,7 +127,7 @@ class App
           query = new Parse.Query(app.parse.objects.Test)
           query.limit(1000).find()
 
-  initTest: ->
+  init: ->
     Parse.Promise.when(@parse.api.getConfig(), @parse.api.createTester(), @parse.api.getSentences()).done (configResult, testerResult, sentenceResults) ->
       config = configResult
       currentUser = testerResult
@@ -142,7 +149,8 @@ class App
 
   startTest: ->
     sentences[0].makeCurrent()
-    $start.hide()
+    $practiceInstructions.hide()
+    $inProgress.show()
     $textarea.val ""
     $textarea.focus()
 
@@ -152,6 +160,9 @@ class App
     $next.hide()
     $textarea.val ""
     $textarea.focus()
+
+  initPractice: ->
+    $practiceInstructions.show()
 
   saveToParse: ->
     rawKeypresses = []
