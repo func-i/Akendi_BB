@@ -9,6 +9,10 @@
     "underscore": "~1.6.0"
   },
   "devDependencies": {
-    "underscore": "~1.6.0"
+    "underscore": "~1.6.0",
+    "bootstrap-sass-official": "~3.2.0+1"
+  },
+  "resolutions": {
+    "bootstrap-sass-official": "~3.2.0+1"
   }
 }
