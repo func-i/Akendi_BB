@@ -4,29 +4,30 @@ currentSentence = null
 currentUser = null
 config = null
 
-$html = $('html')
-$instructions = $('.instructions')
-$start = $instructions.find('.start')
-$end = $('.end')
-$practiceEnd = $('.practice.end')
-$next = $practiceEnd.find('.next')
-$sessionEnd = $('.session.end')
-$inProgress = $('#in-progress')
-$sentenceForm = $('#sentence-form')
-$textarea     = $sentenceForm.find('textarea')
-$submit       = $sentenceForm.find('input[type="submit"]')
-$sentence = $('#sentence')
+els =
+  $html:         $('html')
+  $instructions: $('.instructions')
+  $start:        $('.instructions .start')
+  $end:          $('.end')
+  $practiceEnd:  $('.practice.end')
+  $next:         $('.practice.end .next')
+  $sessionEnd:   $('.session.end')
+  $inProgress:   $('#in-progress')
+  $sentenceForm: $('#sentence-form')
+  $textarea:     $('#sentence-form textarea')
+  $submit:       $('#sentence-form input[type="submit"]')
+  $sentence:     $('#sentence')
 
-$html.on "click", (ev) ->
+els.$html.on "click", (ev) ->
   ev.preventDefault()
-  $textarea.focus()
-  inputLength = $textarea.val().length
-  $textarea[0].setSelectionRange(inputLength, inputLength)   
+  els.$textarea.focus()
+  inputLength = els.$textarea.val().length
+  els.$textarea[0].setSelectionRange(inputLength, inputLength)   
 
-$textarea.on "keydown", (ev) ->
+els.$textarea.on "keydown", (ev) ->
   ev.preventDefault() if ev.which is 8
 
-$textarea.on "keypress", (ev) ->
+els.$textarea.on "keypress", (ev) ->
   currentSentence.start() unless currentSentence.isInProgress or currentSentence.isFinished
   if currentSentence.isInProgress
     keypress = new Keypress
@@ -34,18 +35,18 @@ $textarea.on "keypress", (ev) ->
       sentence: currentSentence
     currentSentence.rawKeypresses.push keypress
 
-$start.click (ev) ->
+els.$start.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
   app.startTest()
 
-$next.click (ev) ->
+els.$next.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
-  $practiceEnd.hide()
+  els.$practiceEnd.hide()
   $('.experiment.instructions').show()
 
-$submit.click (ev) ->
+els.$submit.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
   currentSentence.stop()
@@ -84,8 +85,7 @@ class Sentence
     @loadText()
 
   loadText: ->
-    $sentence.text @expectedText
-    $sentence.lettering()
+    els.$sentence.text @expectedText
 
   setSpeedInWpm: ->
     timeInMin = (@timeInMs / 1000) / 60
@@ -97,7 +97,7 @@ class Sentence
 
   stop: ->
     @timeInMs = (new Date().getTime()) - @startTime
-    @actualText = $textarea.val()
+    @actualText = els.$textarea.val()
     @setSpeedInWpm()
     @isInProgress = false
     @isFinished = true
@@ -179,27 +179,28 @@ class App
   startTest: ->
     sentences[0].makeCurrent()
     @startTime = new Date().getTime()
-    $instructions.hide()
-    $end.hide()
-    $inProgress.show()
-    $textarea.val ""
-    $textarea.focus()
+    els.$instructions.hide()
+    els.$practiceEnd.hide()
+    els.$sessionEnd.hide()
+    els.$inProgress.show()
+    els.$textarea.val ""
+    els.$textarea.focus()
 
   stopTest: ->
     if @isPractice
-      $end = $practiceEnd
+      $end = els.$practiceEnd
       sentences = _.where allSentences, { isPractice: false }
       @isPractice = false
     else
-      $end = $sessionEnd
+      $end = els.$sessionEnd
     $end.show()
-    $inProgress.hide()
+    els.$inProgress.hide()
 
   showNextSentence: ->
     index = sentences.indexOf(currentSentence)
     sentences[index + 1].makeCurrent()
-    $textarea.val ""
-    $textarea.focus()
+    els.$textarea.val ""
+    els.$textarea.focus()
 
   initPractice: ->
     $('.practice.instructions').show()
