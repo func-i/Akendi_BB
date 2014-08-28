@@ -244,7 +244,7 @@ class App
       timeString = "#{now.getFullYear()}-#{now.getMonth()}-#{now.getDate()}-#{now.getTime()}"
 
       testsCsv = JSONToCSVConvertor testsFormatted, 'Tests', true
-      testsUri = "data:text/csv;charset=utf-8," + escape(testsCsv)
+      testsUri = "data:text/csv;charset=utf-8," + encodeURIComponent(testsCsv)
 
       $div = $('<div/>')
       $downloadTests = $ '<a/>',
@@ -255,8 +255,8 @@ class App
       .appendTo $div
       $div.appendTo els.$admin
 
-      rawKeypressesCsv = JSONToCSVConvertor rawKeypressesFormatted, 'Raw Keypresses', true
-      rawKeypressesUri = "data:text/csv;charset=utf-8," + escape(rawKeypressesCsv)
+      rawKeypressesCsv = JSONToCSVConvertor rawKeypressesFormatted, 'Raw Keypresses', true      
+      rawKeypressesUri = "data:text/csv;charset=utf-8," + encodeURIComponent(rawKeypressesCsv)
 
       $div = $('<div/>')
       $downloadRawKeypresses = $ '<a/>',
