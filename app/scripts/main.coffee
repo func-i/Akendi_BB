@@ -5,25 +5,34 @@ currentUser = null
 config = null
 
 els =
-  $html:         $('html')
-  $instructions: $('.instructions')
-  $start:        $('.instructions .start')
-  $end:          $('.end')
-  $practiceEnd:  $('.practice.end')
-  $next:         $('.practice.end .next')
-  $sessionEnd:   $('.session.end')
-  $inProgress:   $('#in-progress')
-  $sentenceForm: $('#sentence-form')
-  $textarea:     $('#sentence-form textarea')
-  $submit:       $('#sentence-form input[type="submit"]')
-  $sentence:     $('#sentence')
-  $admin:        $('#admin')
+  $html:          $('html')
+  $welcome:       $('.welcome')
+  $startSession:  $('.start-session')
+  $instructions:  $('.instructions')
+  $startPractice: $('.start-practice')
+  $end:           $('.end')
+  $practiceEnd:   $('.practice.end')
+  $next:          $('.practice.end .next')
+  $sessionEnd:    $('.session.end')
+  $done:          $('.done')
+  $inProgress:    $('#in-progress')
+  $sentenceForm:  $('#sentence-form')
+  $textarea:      $('#sentence-form textarea')
+  $submit:        $('#sentence-form input[type="submit"]')
+  $sentence:      $('#sentence')
+  $admin:         $('#admin')
 
 els.$html.on "click", (ev) ->
   ev.preventDefault()
   els.$textarea.focus()
   inputLength = els.$textarea.val().length
-  els.$textarea[0].setSelectionRange(inputLength, inputLength)   
+  els.$textarea[0].setSelectionRange(inputLength, inputLength)
+
+els.$startSession.on "click", (ev) ->
+  ev.preventDefault()
+  ev.stopPropagation()
+  els.$welcome.hide()
+  app.initPractice()
 
 els.$textarea.on "keydown", (ev) ->
   ev.preventDefault() if ev.which is 8
@@ -36,7 +45,7 @@ els.$textarea.on "keypress", (ev) ->
       sentence: currentSentence
     currentSentence.rawKeypresses.push keypress
 
-els.$start.click (ev) ->
+els.$startPractice.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
   app.startTest()
@@ -127,7 +136,11 @@ class App
       els.$html.off "click"
     else
       @init().then =>
-        @initPractice()
+        @startSession()
+        # @initPractice()
+
+  startSession: ->
+    els.$welcome.show()
     
   initParse: ->
     Parse.initialize("wn0yAEDFtIJ9Iw3jrL8hBJBeFbjQkVaJvnmY1CS3", "KBmFKqYHviQnxPQhQe9U7VOWg5E5LjFFKoqzC7ay")
