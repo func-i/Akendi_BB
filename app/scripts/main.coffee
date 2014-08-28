@@ -63,11 +63,12 @@ els.$next.click (ev) ->
 els.$submit.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
-  currentSentence.stop()
-  if app.outOfTime()
-    app.stopTest()
-  else
-    app.showNextSentence()
+  if currentSentence.isInProgress
+    currentSentence.stop()
+    if app.outOfTime()
+      app.stopTest()
+    else
+      app.showNextSentence()
 
 class Insert
   constructor: (args) ->
