@@ -121,6 +121,7 @@ class Sentence
     test = new app.parse.objects.Test()
     test.set 'rawKeypresses', rawKeypresses
     test.set 'testerId', currentUser.id
+    test.set 'participantId', currentUser.get('participantId')
     test.set 'actualText', @actualText
     test.set 'expectedText', @expectedText
     test.set 'timeInMs', @timeInMs
@@ -230,7 +231,7 @@ class App
         testId = test.id
         testFormatted =
           'Id': testId
-          'Tester Id': test.get('testerId')
+          'Participant Id': test.get('participantId')
           'Actual Text': test.get('actualText')
           'Expected Text': test.get('expectedText')
           'Time in MS': test.get 'timeInMs'
