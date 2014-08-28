@@ -136,10 +136,10 @@ class App
       els.$html.off "click"
     else
       @init().then =>
-        @startSession()
+        @initSession()
         # @initPractice()
 
-  startSession: ->
+  initSession: ->
     els.$welcome.show()
     
   initParse: ->
