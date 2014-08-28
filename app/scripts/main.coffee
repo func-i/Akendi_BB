@@ -156,8 +156,13 @@ class App
           query = new Parse.Query(@parse.objects.Config)
           query.first()
         createTester: =>
-          tester = new @parse.objects.Tester()
-          tester.save()
+          query = new Parse.Query(@parse.objects.Tester)
+          query.limit(1000).find().then (results) =>
+            tester = new @parse.objects.Tester()
+            tester.set 'participantId', results.length + 1
+            tester.save()
+          .fail (err) =>
+            @parse.api.createTester()
         getSentences: =>
           query = new Parse.Query(@parse.objects.Sentence)
           query.find()
