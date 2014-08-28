@@ -182,6 +182,40 @@ class App
   maxTime: ->
     if @isPractice then @config.get('practiceTime') else @config.get('experimentTime')
 
+  outOfTime: ->
+    (new Date().getTime()) - @startTime > @maxTime()
+
+  startTest: ->
+    sentences[0].makeCurrent()
+    @startTime = new Date().getTime()
+    els.$instructions.hide()
+    els.$practiceEnd.hide()
+    els.$sessionEnd.hide()
+    els.$inProgress.show()
+    els.$textarea.val ""
+    els.$textarea.focus()
+
+  stopTest: ->
+    if @isPractice
+      $end = els.$practiceEnd
+      sentences = _.where allSentences, { isPractice: false }
+      @isPractice = false
+    else
+      $end = els.$sessionEnd
+    $end.show()
+    els.$inProgress.hide()
+
+  showNextSentence: ->
+    index = sentences.indexOf(currentSentence)
+    sentences[index + 1].makeCurrent()
+    els.$textarea.val ""
+    els.$textarea.focus()
+
+  initPractice: ->
+    $('.practice.instructions').show()
+    @isPractice = true
+    sentences = _.where allSentences, { isPractice: true }
+
   generateCSVs: ->
     @parse.api.getTests().then (tests) ->
       # array = [['Tester Id', 'Sentence Id', 'Target Character', 'Typed Character', 'Time']]
@@ -234,39 +268,5 @@ class App
       $div.appendTo els.$admin
 
       els.$admin.show()
-
-  outOfTime: ->
-    (new Date().getTime()) - @startTime > @maxTime()
-
-  startTest: ->
-    sentences[0].makeCurrent()
-    @startTime = new Date().getTime()
-    els.$instructions.hide()
-    els.$practiceEnd.hide()
-    els.$sessionEnd.hide()
-    els.$inProgress.show()
-    els.$textarea.val ""
-    els.$textarea.focus()
-
-  stopTest: ->
-    if @isPractice
-      $end = els.$practiceEnd
-      sentences = _.where allSentences, { isPractice: false }
-      @isPractice = false
-    else
-      $end = els.$sessionEnd
-    $end.show()
-    els.$inProgress.hide()
-
-  showNextSentence: ->
-    index = sentences.indexOf(currentSentence)
-    sentences[index + 1].makeCurrent()
-    els.$textarea.val ""
-    els.$textarea.focus()
-
-  initPractice: ->
-    $('.practice.instructions').show()
-    @isPractice = true
-    sentences = _.where allSentences, { isPractice: true }
 
 app = new App()
