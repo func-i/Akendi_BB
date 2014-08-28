@@ -9,7 +9,7 @@ els =
   $welcome:       $('.welcome')
   $startSession:  $('.start-session')
   $instructions:  $('.instructions')
-  $startPractice: $('.start-practice')
+  $start:         $('.start')
   $end:           $('.end')
   $practiceEnd:   $('.practice.end')
   $next:          $('.practice.end .next')
@@ -45,7 +45,7 @@ els.$textarea.on "keypress", (ev) ->
       sentence: currentSentence
     currentSentence.rawKeypresses.push keypress
 
-els.$startPractice.click (ev) ->
+els.$start.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
   app.startTest()
