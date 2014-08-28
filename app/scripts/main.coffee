@@ -37,13 +37,17 @@ els.$startSession.on "click", (ev) ->
 els.$textarea.on "keydown", (ev) ->
   ev.preventDefault() if ev.which is 8
 
-els.$textarea.on "keypress", (ev) ->
+els.$textarea.on "keyup", (ev) ->
   currentSentence.start() unless currentSentence.isInProgress or currentSentence.isFinished
   if currentSentence.isInProgress
-    keypress = new Keypress
-      char: String.fromCharCode(ev.charCode)
+    newText = $(this).val()
+    diffs = _.reject JsDiff.diffChars(currentSentence.actualText, newText), (diff) ->
+      !diff.added && !diff.removed
+    keypress = new Insert
+      diffs: diffs
       sentence: currentSentence
-    currentSentence.rawKeypresses.push keypress
+    currentSentence.inserts.push keypress
+    currentSentence.actualText = newText
 
 els.$start.click (ev) ->
   ev.preventDefault()
@@ -65,21 +69,34 @@ els.$submit.click (ev) ->
   else
     app.showNextSentence()
 
-class Keypress
+class Insert
   constructor: (args) ->
-    @char = args.char
+    @diffs = args.diffs
     @sentence = args.sentence
-    @index = @sentence.rawKeypresses.length
+    @index = @sentence.inserts.length
+    @setWhoDunnit()
     @setTimeSinceStart()
+
+  setWhoDunnit: ->
+    isUserInput = @diffs.length is 1 and @diffs[0].added and @diffs[0].value.length is 1
+    @whoDunnit = if isUserInput then 'user' else 'OS'
 
   setTimeSinceStart: ->
     rawTime = new Date().getTime()
     @sentence.startTime = rawTime if @index is 0
     @timeSinceStart = rawTime - @sentence.startTime
 
+  abbrDiffs: ->
+    abbrDiffs = []
+    for diff in @diffs
+      abbrDiff = if diff.added then {added: diff.value} else {removed: diff.value}   
+      abbrDiffs.push abbrDiff
+    abbrDiffs
+
   abbrSelf: ->
     index: @index
-    char: @char
+    whoDunnit: @whoDunnit
+    diffs: @abbrDiffs()
     timeSinceStart: @timeSinceStart
 
 class Sentence
@@ -87,8 +104,9 @@ class Sentence
     @parseObj = args.parseObj
     @isCurrent = false
     @expectedText = @parseObj.get('text')
+    @actualText = ""
     @isPractice = @parseObj.get('isPractice')
-    @rawKeypresses = []
+    @inserts = []
 
   makeCurrent: ->
     currentSentence = this
@@ -114,12 +132,12 @@ class Sentence
     @saveToParse() unless app.isPractice
 
   saveToParse: ->
-    rawKeypresses = []
-    for keypress in @rawKeypresses
-      rawKeypresses.push keypress.abbrSelf()
+    inserts = []
+    for keypress in @inserts
+      inserts.push keypress.abbrSelf()
 
     test = new app.parse.objects.Test()
-    test.set 'rawKeypresses', rawKeypresses
+    test.set 'inserts', inserts
     test.set 'testerId', currentUser.id
     test.set 'participantId', currentUser.get('participantId')
     test.set 'actualText', @actualText
@@ -226,7 +244,7 @@ class App
     @parse.api.getTests().then (tests) ->
       # array = [['Tester Id', 'Sentence Id', 'Target Character', 'Typed Character', 'Time']]
       testsFormatted = []
-      rawKeypressesFormatted = []
+      insertsFormatted = []
       for test in tests
         testId = test.id
         testFormatted =
@@ -238,13 +256,13 @@ class App
           'Speed in WPM': test.get 'speedInWpm'
         testsFormatted.push testFormatted
 
-        for rawKeypress in test.get('rawKeypresses')
-          rawKeypressFormatted =
+        for insert in test.get('inserts')
+          insertFormatted =
             'Test Id': testId
-            'Index': rawKeypress.index
-            'Character': rawKeypress.char
-            'Time in MS since start': rawKeypress.timeSinceStart
-          rawKeypressesFormatted.push rawKeypressFormatted
+            'Index': insert.index
+            'Character': insert.char
+            'Time in MS since start': insert.timeSinceStart
+          insertsFormatted.push insertFormatted
 
       now = new Date()
       timeString = "#{now.getFullYear()}-#{now.getMonth()}-#{now.getDate()}-#{now.getTime()}"
@@ -261,12 +279,12 @@ class App
       .appendTo $div
       $div.appendTo els.$admin
 
-      rawKeypressesCsv = JSONToCSVConvertor rawKeypressesFormatted, 'Raw Keypresses', true      
-      rawKeypressesUri = "data:text/csv;charset=utf-8," + encodeURIComponent(rawKeypressesCsv)
+      insertsCsv = JSONToCSVConvertor insertsFormatted, 'Raw Keypresses', true      
+      insertsUri = "data:text/csv;charset=utf-8," + encodeURIComponent(insertsCsv)
 
       $div = $('<div/>')
       $downloadRawKeypresses = $ '<a/>',
-        href: rawKeypressesUri
+        href: insertsUri
         download: "raw-keypresses-#{timeString}.csv"
         html: 'Raw Keypresses'
         class: 'btn btn-success'
