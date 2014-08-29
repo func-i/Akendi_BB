@@ -103,7 +103,10 @@ class Insert
   abbrDiffs: ->
     abbrDiffs = []
     for diff in @diffs
-      abbrDiff = if diff.added then {added: diff.value} else {removed: diff.value}   
+      type = if diff.added then 'insert' else 'delete'
+      abbrDiff =
+        type: type
+        value: diff.value
       abbrDiffs.push abbrDiff
     abbrDiffs
 
@@ -155,6 +158,7 @@ class Sentence
     test.set 'inserts', inserts
     test.set 'testerId', currentUser.id
     test.set 'participantId', currentUser.get('participantId')
+    test.set 'round', @round
     test.set 'actualText', @actualText
     test.set 'expectedText', @expectedText
     test.set 'timeInMs', @timeInMs
@@ -262,25 +266,32 @@ class App
   generateCSVs: ->
     @parse.api.getTests().then (tests) ->
       testsFormatted = []
-      insertsFormatted = []
+
       for test in tests
-        testId = test.id
+
+        insertsFormatted = []
+        for insert in test.get('inserts')
+          if insert.whoDunnit is 'user'
+            insertFormatted = "user: '#{insert.diffs[0].value}' (#{insert.timeSinceStart})"
+          else
+            diffsFormatted = []
+            for diff in insert.diffs
+              diffsFormatted.push "[#{diff.type}: '#{diff.value}']"
+            insertFormatted = "OS: #{diffsFormatted} (#{insert.timeSinceStart})"
+          insertsFormatted.push insertFormatted
+
+
         testFormatted =
-          'Id': testId
+          'Id': test.id
+          'Round': test.get('round')
           'Participant Id': test.get('participantId')
           'Actual Text': test.get('actualText')
           'Expected Text': test.get('expectedText')
+          'Inputs': insertsFormatted.join('\n')
           'Time in MS': test.get 'timeInMs'
           'Speed in WPM': test.get 'speedInWpm'
-        testsFormatted.push testFormatted
 
-        for insert in test.get('inserts')
-          insertFormatted =
-            'Test Id': testId
-            'Index': insert.index
-            'Character': insert.char
-            'Time in MS since start': insert.timeSinceStart
-          insertsFormatted.push insertFormatted
+        testsFormatted.push testFormatted
 
       now = new Date()
       timeString = "#{now.getFullYear()}-#{now.getMonth()}-#{now.getDate()}-#{now.getTime()}"
