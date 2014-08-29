@@ -6,6 +6,7 @@ config = null
 
 els =
   $html:          $('html')
+  $allPages:      $('.page')
   $welcome:       $('.welcome')
   $startSession:  $('.start-session')
   $instructions:  $('.instructions')
@@ -17,12 +18,14 @@ els =
   $toTest:        $('.to-test')
   $sessionEnd:    $('.session.end')
   $done:          $('.done')
-  $inProgress:    $('#in-progress')
+  $inProgress:    $('.in-progress')
   $sentenceForm:  $('#sentence-form')
   $textarea:      $('#sentence-form textarea')
   $submit:        $('#sentence-form input[type="submit"]')
   $sentence:      $('#sentence')
   $admin:         $('#admin')
+
+# handlers
 
 els.$html.on "click", (ev) ->
   ev.preventDefault()
@@ -33,7 +36,7 @@ els.$html.on "click", (ev) ->
 els.$startSession.on "click", (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
-  els.$welcome.hide()
+  els.$allPages.hide()
   app.initPractice()
 
 els.$textarea.on "keydown", (ev) ->
@@ -61,18 +64,18 @@ els.$start.click (ev) ->
 els.$toTest.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
-  els.$practiceEnd.hide()
+  els.$allPages.hide()
   $('.round-1.instructions').show()
 
 els.$nextRound.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
-  els.$round1End.hide()
+  els.$allPages.hide()
   $('.round-2.instructions').show()
 
 els.$submit.click (ev) ->
+  ev.preventDefault()
   if currentSentence.isInProgress
-    ev.preventDefault()
     ev.stopPropagation()
     currentSentence.stop()
     if app.outOfTime()
@@ -229,9 +232,7 @@ class App
   startTest: ->
     sentences[0].makeCurrent()
     @startTime = new Date().getTime()
-    els.$instructions.hide()
-    els.$practiceEnd.hide()
-    els.$sessionEnd.hide()
+    els.$allPages.hide()
     els.$inProgress.show()
     els.$textarea.val ""
     els.$textarea.focus()
@@ -248,8 +249,8 @@ class App
       @round = 2
     else if @round is 2
       $end = els.$sessionEnd
+    els.$allPages.hide()
     $end.show()
-    els.$inProgress.hide()
     els.$html.off 'click'
 
   showNextSentence: ->
@@ -329,7 +330,7 @@ class App
           class: 'btn btn-success'
         .appendTo $div
         $div.appendTo els.$admin
-
+      
       els.$admin.show()
 
 app = new App()
