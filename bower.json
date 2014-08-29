@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "underscore": "~1.6.0",
-    "bootstrap-sass-official": "~3.2.0"
+    "bootstrap-sass-official": "~3.2.0",
+    "excellentexport": "*"
   }
 }
