@@ -12,7 +12,9 @@ els =
   $start:         $('.start')
   $end:           $('.end')
   $practiceEnd:   $('.practice.end')
-  $next:          $('.practice.end .next')
+  $round1End:     $('.round-1.end')
+  $nextRound:     $('.next-round')
+  $toTest:        $('.to-test')
   $sessionEnd:    $('.session.end')
   $done:          $('.done')
   $inProgress:    $('#in-progress')
@@ -56,11 +58,23 @@ els.$start.click (ev) ->
   ev.stopPropagation()
   app.startTest()
 
-els.$next.click (ev) ->
+els.$toTest.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
   els.$practiceEnd.hide()
-  $('.experiment.instructions').show()
+  $('.round-1.instructions').show()
+
+els.$nextRound.click (ev) ->
+  ev.preventDefault()
+  ev.stopPropagation()
+  els.$round1End.hide()
+  $('.round-2.instructions').show()
+
+els.$done.click (ev) ->
+  ev.preventDefault()
+  ev.stopPropagation()
+  # els.$sessionEnd.hide()
+  # app = new App()
 
 els.$submit.click (ev) ->
   ev.preventDefault()
@@ -110,8 +124,9 @@ class Sentence
     @parseObj = args.parseObj
     @isCurrent = false
     @expectedText = @parseObj.get('text')
-    @actualText = ""
     @isPractice = @parseObj.get('isPractice')
+    @round = @parseObj.get('round')
+    @actualText = ""
     @inserts = []
 
   makeCurrent: ->
@@ -162,7 +177,6 @@ class App
     else
       @init().then =>
         @initSession()
-        # @initPractice()
 
   initSession: ->
     els.$welcome.show()
@@ -227,9 +241,14 @@ class App
   stopTest: ->
     if @isPractice
       $end = els.$practiceEnd
-      sentences = _.where allSentences, { isPractice: false }
+      sentences = _.where allSentences, { round: 1 }
+      @round = 1
       @isPractice = false
-    else
+    else if @round is 1
+      $end = els.$round1End
+      sentences = _.where allSentences, { round: 2 }
+      @round = 2
+    else if @round is 2
       $end = els.$sessionEnd
     $end.show()
     els.$inProgress.hide()
