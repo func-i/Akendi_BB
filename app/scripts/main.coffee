@@ -270,6 +270,7 @@ class App
       testerIds = []
       for rawTest in _.sortBy(rawTests, (rawTest) -> rawTest.get('createdAt'))
         testJson = rawTest.toJSON()
+        testJson.id = rawTest.id
         testsJson.push testJson
         testerIds.push testJson.testerId if testerIds.indexOf(testJson.testerId) is -1
 
