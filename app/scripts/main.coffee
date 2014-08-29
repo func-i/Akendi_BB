@@ -71,9 +71,9 @@ els.$nextRound.click (ev) ->
   $('.round-2.instructions').show()
 
 els.$submit.click (ev) ->
-  ev.preventDefault()
-  ev.stopPropagation()
   if currentSentence.isInProgress
+    ev.preventDefault()
+    ev.stopPropagation()
     currentSentence.stop()
     if app.outOfTime()
       app.stopTest()
