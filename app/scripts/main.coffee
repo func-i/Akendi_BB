@@ -37,17 +37,19 @@ els.$startSession.on "click", (ev) ->
 els.$textarea.on "keydown", (ev) ->
   ev.preventDefault() if ev.which is 8
 
-els.$textarea.on "keyup", (ev) ->
+els.$textarea.on "input", (ev) ->
   currentSentence.start() unless currentSentence.isInProgress or currentSentence.isFinished
   if currentSentence.isInProgress
     newText = $(this).val()
     diffs = _.reject JsDiff.diffChars(currentSentence.actualText, newText), (diff) ->
       !diff.added && !diff.removed
-    keypress = new Insert
+    currentSentence.actualText = newText
+    
+    insert = new Insert
+      charCode: ev.charCode
       diffs: diffs
       sentence: currentSentence
-    currentSentence.inserts.push keypress
-    currentSentence.actualText = newText
+    currentSentence.inserts.push insert
 
 els.$start.click (ev) ->
   ev.preventDefault()
@@ -79,7 +81,7 @@ class Insert
     @setTimeSinceStart()
 
   setWhoDunnit: ->
-    isUserInput = @diffs.length is 1 and @diffs[0].added and @diffs[0].value.length is 1
+    isUserInput = @diffs.length is 1 and @diffs[0].added and @diffs[0].value.length is 1 and @diffs[0].value is @sentence.actualText[@sentence.actualText.length - 1]
     @whoDunnit = if isUserInput then 'user' else 'OS'
 
   setTimeSinceStart: ->
@@ -134,8 +136,8 @@ class Sentence
 
   saveToParse: ->
     inserts = []
-    for keypress in @inserts
-      inserts.push keypress.abbrSelf()
+    for insert in @inserts
+      inserts.push insert.abbrSelf()
 
     test = new app.parse.objects.Test()
     test.set 'inserts', inserts
