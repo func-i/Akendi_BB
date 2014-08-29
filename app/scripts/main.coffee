@@ -47,11 +47,11 @@ els.$textarea.on "input", (ev) ->
       !diff.added && !diff.removed
     currentSentence.actualText = newText
     
-    insert = new Insert
+    input = new Insert
       charCode: ev.charCode
       diffs: diffs
       sentence: currentSentence
-    currentSentence.inserts.push insert
+    currentSentence.inputs.push input
 
 els.$start.click (ev) ->
   ev.preventDefault()
@@ -84,7 +84,7 @@ class Insert
   constructor: (args) ->
     @diffs = args.diffs
     @sentence = args.sentence
-    @index = @sentence.inserts.length
+    @index = @sentence.inputs.length
     @setWhoDunnit()
     @setTimeSinceStart()
 
@@ -124,7 +124,7 @@ class Sentence
     @isPractice = @parseObj.get('isPractice')
     @round = @parseObj.get('round')
     @actualText = ""
-    @inserts = []
+    @inputs = []
 
   makeCurrent: ->
     currentSentence = this
@@ -150,12 +150,12 @@ class Sentence
     @saveToParse() unless app.isPractice
 
   saveToParse: ->
-    inserts = []
-    for insert in @inserts
-      inserts.push insert.abbrSelf()
+    inputs = []
+    for input in @inputs
+      inputs.push input.abbrSelf()
 
     test = new app.parse.objects.Test()
-    test.set 'inserts', inserts
+    test.set 'inputs', inputs
     test.set 'testerId', currentUser.id
     test.set 'participantId', currentUser.get('participantId')
     test.set 'round', @round
