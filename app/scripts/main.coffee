@@ -81,7 +81,10 @@ class Insert
     @setTimeSinceStart()
 
   setWhoDunnit: ->
-    isUserInput = @diffs.length is 1 and @diffs[0].added and @diffs[0].value.length is 1 and @diffs[0].value is @sentence.actualText[@sentence.actualText.length - 1]
+    isUserInput = @diffs.length is 1 and
+      @diffs[0].added and
+      @diffs[0].value.length is 1 and
+      @diffs[0].value is @sentence.actualText[@sentence.actualText.length - 1]
     @whoDunnit = if isUserInput then 'user' else 'OS'
 
   setTimeSinceStart: ->
