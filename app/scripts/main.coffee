@@ -292,12 +292,25 @@ class App
           testFormatted =
             'Id': test.id
             'Round': test.round
-            'Participant Id': test.participantId
-            'Expected Text': test.expectedText
-            'Actual Text': test.actualText
+            'Stimuli': test.expectedText
+            'Response': test.actualText
             'Inputs': inputsFormatted.join('\n')
-            'Time in MS': test.timeInMs
-            'Speed in WPM': test.speedInWpm
+            'Total Time (ms)': test.timeInMs
+            'Total Time (s)': (test.timeInMs / 1000)
+            'Pressed Characters': test.actualText.length
+            'Pressed Words': (test.actualText.length / 5)
+            'Words/Minute': test.speedInWpm
+            'C_Error': 0
+            'LS_Error': 0
+            'DS_Error': 0
+            'VA_Error': 0
+            'HA_Error': 0
+            'IC_Error': 0
+            'FL_Error': 0
+            'DC_Error': 0
+            'AC_Error': 0
+            'Other': 0
+            'Autocomplete': _.where(test.inputs, { whoDunnit: 'OS' }).length
 
           testsFormatted.push testFormatted
 
