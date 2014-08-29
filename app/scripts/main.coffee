@@ -268,7 +268,7 @@ class App
       
       testsJson = []
       testerIds = []
-      for rawTest in rawTests
+      for rawTest in _.sortBy(rawTests, (rawTest) -> rawTest.get('createdAt'))
         testJson = rawTest.toJSON()
         testsJson.push testJson
         testerIds.push testJson.testerId if testerIds.indexOf(testJson.testerId) is -1
@@ -277,7 +277,7 @@ class App
         tests = _.where testsJson, { testerId: testerId }
 
         testsFormatted = []
-        for test in tests
+        for test in _.sortBy(tests, (test) -> test.createdAt)
           inputsFormatted = []
           for input in test.inputs
             if input.whoDunnit is 'user'
