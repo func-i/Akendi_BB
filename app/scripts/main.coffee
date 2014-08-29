@@ -170,7 +170,6 @@ class App
       objects:
         Sentence: Parse.Object.extend("Sentence")
         Test: Parse.Object.extend("Test")
-        Keypress: Parse.Object.extend("Keypress")
         Tester: Parse.Object.extend("Tester")
         Config: Parse.Object.extend("Config")
       api:
@@ -245,7 +244,6 @@ class App
 
   generateCSVs: ->
     @parse.api.getTests().then (tests) ->
-      # array = [['Tester Id', 'Sentence Id', 'Target Character', 'Typed Character', 'Time']]
       testsFormatted = []
       insertsFormatted = []
       for test in tests
@@ -278,18 +276,6 @@ class App
         href: testsUri
         download: "tests-#{timeString}.csv"
         html: 'Tests'
-        class: 'btn btn-success'
-      .appendTo $div
-      $div.appendTo els.$admin
-
-      insertsCsv = JSONToCSVConvertor insertsFormatted, 'Raw Keypresses', true      
-      insertsUri = "data:text/csv;charset=utf-8," + encodeURIComponent(insertsCsv)
-
-      $div = $('<div/>')
-      $downloadRawKeypresses = $ '<a/>',
-        href: insertsUri
-        download: "raw-keypresses-#{timeString}.csv"
-        html: 'Raw Keypresses'
         class: 'btn btn-success'
       .appendTo $div
       $div.appendTo els.$admin
