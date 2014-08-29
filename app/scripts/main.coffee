@@ -264,49 +264,57 @@ class App
     sentences = _.where allSentences, { isPractice: true }
 
   generateCSVs: ->
-    @parse.api.getTests().then (tests) ->
-      testsFormatted = []
+    @parse.api.getTests().then (rawTests) ->
+      
+      testsJson = []
+      testerIds = []
+      for rawTest in rawTests
+        testJson = rawTest.toJSON()
+        testsJson.push testJson
+        testerIds.push testJson.testerId if testerIds.indexOf(testJson.testerId) is -1
 
-      for test in tests
+      for testerId in testerIds
+        tests = _.where testsJson, { testerId: testerId }
 
-        insertsFormatted = []
-        for insert in test.get('inserts')
-          if insert.whoDunnit is 'user'
-            insertFormatted = "user: '#{insert.diffs[0].value}' (#{insert.timeSinceStart})"
-          else
-            diffsFormatted = []
-            for diff in insert.diffs
-              diffsFormatted.push "[#{diff.type}: '#{diff.value}']"
-            insertFormatted = "OS: #{diffsFormatted} (#{insert.timeSinceStart})"
-          insertsFormatted.push insertFormatted
+        testsFormatted = []
+        for test in tests
+          inputsFormatted = []
+          for input in test.inputs
+            if input.whoDunnit is 'user'
+              inputFormatted = "user: '#{input.diffs[0].value}' (#{input.timeSinceStart})"
+            else
+              diffsFormatted = []
+              for diff in input.diffs
+                diffsFormatted.push "[#{diff.type}: '#{diff.value}']"
+              inputFormatted = "OS: #{diffsFormatted} (#{input.timeSinceStart})"
+            inputsFormatted.push inputFormatted
 
+          testFormatted =
+            'Id': test.id
+            'Round': test.round
+            'Participant Id': test.participantId
+            'Expected Text': test.expectedText
+            'Actual Text': test.actualText
+            'Inputs': inputsFormatted.join('\n')
+            'Time in MS': test.timeInMs
+            'Speed in WPM': test.speedInWpm
 
-        testFormatted =
-          'Id': test.id
-          'Round': test.get('round')
-          'Participant Id': test.get('participantId')
-          'Actual Text': test.get('actualText')
-          'Expected Text': test.get('expectedText')
-          'Inputs': insertsFormatted.join('\n')
-          'Time in MS': test.get 'timeInMs'
-          'Speed in WPM': test.get 'speedInWpm'
+          testsFormatted.push testFormatted
 
-        testsFormatted.push testFormatted
+        now = new Date()
+        timeString = "#{now.getFullYear()}-#{now.getMonth()}-#{now.getDate()}-#{now.getTime()}"
 
-      now = new Date()
-      timeString = "#{now.getFullYear()}-#{now.getMonth()}-#{now.getDate()}-#{now.getTime()}"
+        testsCsv = JSONToCSVConvertor testsFormatted, "Participant #{test.participantId}", true
+        testsUri = "data:text/csv;charset=utf-8," + encodeURIComponent(testsCsv)
 
-      testsCsv = JSONToCSVConvertor testsFormatted, 'Tests', true
-      testsUri = "data:text/csv;charset=utf-8," + encodeURIComponent(testsCsv)
-
-      $div = $('<div/>')
-      $downloadTests = $ '<a/>',
-        href: testsUri
-        download: "tests-#{timeString}.csv"
-        html: 'Tests'
-        class: 'btn btn-success'
-      .appendTo $div
-      $div.appendTo els.$admin
+        $div = $('<div/>')
+        $downloadTests = $ '<a/>',
+          href: testsUri
+          download: "participant-#{test.participantId}-#{timeString}.csv"
+          html: "Participant #{test.participantId}"
+          class: 'btn btn-success'
+        .appendTo $div
+        $div.appendTo els.$admin
 
       els.$admin.show()
 
