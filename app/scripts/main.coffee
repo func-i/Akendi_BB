@@ -70,12 +70,6 @@ els.$nextRound.click (ev) ->
   els.$round1End.hide()
   $('.round-2.instructions').show()
 
-els.$done.click (ev) ->
-  ev.preventDefault()
-  ev.stopPropagation()
-  # els.$sessionEnd.hide()
-  # app = new App()
-
 els.$submit.click (ev) ->
   ev.preventDefault()
   ev.stopPropagation()
@@ -252,6 +246,7 @@ class App
       $end = els.$sessionEnd
     $end.show()
     els.$inProgress.hide()
+    els.$html.off 'click'
 
   showNextSentence: ->
     index = sentences.indexOf(currentSentence)
