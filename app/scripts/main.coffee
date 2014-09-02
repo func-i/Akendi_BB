@@ -206,9 +206,24 @@ class App
           query = new Parse.Query(@parse.objects.Sentence)
           query.find()
         getTests: =>
-          query = new Parse.Query(@parse.objects.Test)
-          query.limit(1000).find()
+          deferred = new Parse.Promise()
+          results = []
 
+          query = new Parse.Query(@parse.objects.Test)
+          query.limit(1000)
+
+          getTestsWithSkip = (skip) =>
+            query.skip(skip).find().then (rawTests) =>
+              results.push rawTests
+              if rawTests.length is 1000
+                getTestsWithSkip(results.length)
+              else
+                deferred.resolve(_.flatten(results))
+
+          getTestsWithSkip(0)
+
+          return deferred
+          
   init: ->
     Parse.Promise.when(@parse.api.getConfig(), @parse.api.createTester(), @parse.api.getSentences()).done (configResult, testerResult, sentenceResults) =>
       @config = configResult
