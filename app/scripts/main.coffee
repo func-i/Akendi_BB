@@ -24,6 +24,7 @@ els =
   $submit:        $('#sentence-form input[type="submit"]')
   $sentence:      $('#sentence')
   $admin:         $('#admin')
+  $error:         $('#error')
 
 # handlers
 
@@ -173,7 +174,10 @@ class App
     @initParse()
     FastClick.attach(document.body)
     if @isAdmin()
-      @generateCSVs()
+      @generateCSVs().then ->
+        els.$admin.show()
+      .fail ->
+        els.$error.show()
       els.$html.off "click"
     else
       @init().then =>
@@ -346,7 +350,5 @@ class App
           class: 'btn btn-success'
         .appendTo $div
         $div.appendTo els.$admin
-      
-      els.$admin.show()
 
 app = new App()
