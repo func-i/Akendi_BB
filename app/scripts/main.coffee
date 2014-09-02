@@ -215,10 +215,11 @@ class App
           getTestsWithSkip = (skip) =>
             query.skip(skip).find().then (rawTests) =>
               results.push rawTests
+              results = _.flatten(results)
               if rawTests.length is 1000
                 getTestsWithSkip(results.length)
               else
-                deferred.resolve(_.flatten(results))
+                deferred.resolve(results)
 
           getTestsWithSkip(0)
 
