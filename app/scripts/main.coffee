@@ -295,7 +295,7 @@ class App
         testsJson.push testJson
         testerIds.push testJson.testerId if testerIds.indexOf(testJson.testerId) is -1
 
-      for testerId in testerIds
+      for testerId, i in testerIds
         tests = _.where testsJson, { testerId: testerId }
 
         testsFormatted = []
@@ -339,16 +339,19 @@ class App
         now = new Date()
         timeString = "#{now.getFullYear()}-#{now.getMonth()}-#{now.getDate()}-#{now.getTime()}"
 
-        testsCsv = JSONToCSVConvertor testsFormatted, "Participant #{test.participantId}", true
+        participantStart = moment(tests[0].createdAt).format("ddd M/D h:mm a")
+
+        testsCsv = JSONToCSVConvertor testsFormatted, "Participant #{i+1} (#{participantStart})", true
         testsUri = "data:text/csv;charset=utf-8," + encodeURIComponent(testsCsv)
 
         $div = $('<div/>')
         $downloadTests = $ '<a/>',
           href: testsUri
-          download: "participant-#{test.participantId}-#{timeString}.csv"
-          html: "Participant #{test.participantId}"
+          download: "participant-#{i+1}-#{timeString}.csv"
+          html: "Participant #{i+1}"
           class: 'btn btn-success'
         .appendTo $div
+        $("<span>  #{participantStart}</span>").appendTo $div
         $div.appendTo els.$admin
 
 app = new App()
